@@ -76,7 +76,7 @@ const Features = () => {
         </div>
         <div className="mt-12 text-center">
           <Link
-            to="/free-mentorship"
+            to="/mentorship"
             className="shiny-button inline-block bg-gradient-to-r from-gray-900 via-black to-gray-800 dark:from-teal-600 dark:via-teal-500 dark:to-teal-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:shadow-2xl hover:shadow-gray-400/50 dark:hover:shadow-teal-500/30 transform hover:scale-105 transition-all duration-300 border border-gray-600/30 dark:border-teal-400/30"
           >
             Get Started Free →

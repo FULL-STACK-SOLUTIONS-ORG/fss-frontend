@@ -84,10 +84,10 @@ const Hero = () => {
               <div className="absolute inset-0 bg-gradient-to-tl from-green-100 via-emerald-100 to-lime-100 dark:from-slate-800 dark:via-slate-900 dark:to-black rounded-3xl transform -rotate-1 opacity-80"></div>
               <div className="relative bg-gradient-to-br from-white via-green-50 to-green-100 dark:from-slate-800 dark:via-slate-900 dark:to-black backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-black-xl border-2 border-green-200 dark:border-slate-700">
                 <p className="text-2xl md:text-3xl lg:text-4xl text-slate-800 dark:text-slate-100 mb-8 max-w-3xl mx-auto leading-relaxed font-bold">
-                  Don't worry Join Full Stack Solutions Free Personalized 1:1 Mentorship Program and build your career with confidence
+                  Don't worry Join Full Stack Solutions Personalized 1:1 Mentorship Program and build your career with confidence
                 </p>
                 <Link
-                  to="/free-mentorship"
+                  to="/mentorship"
                   className="shiny-button inline-block bg-gradient-to-r from-gray-900 via-black to-gray-800 dark:from-teal-600 dark:via-teal-500 dark:to-teal-600 text-white px-10 py-5 rounded-xl text-lg md:text-xl font-semibold hover:shadow-2xl hover:shadow-gray-400/50 dark:hover:shadow-teal-500/30 transform hover:scale-105 transition-all duration-300 shadow-lg border border-gray-600/30 dark:border-teal-400/30"
                 >
                   <span className="shiny-text">🚀 Start My Journey</span>

@@ -174,7 +174,7 @@ const Mentorship = () => {
                 <form onSubmit={handleStudentSubmit} className="space-y-6">
                    <div className="mb-6 p-4 bg-teal-900/20 border border-teal-700/50 rounded-lg">
                     <h4 className="text-teal-400 font-semibold mb-1">Student Application</h4>
-                    <p className="text-sm text-slate-400">Apply for our free mentorship program to accelerate your learning.</p>
+                    <p className="text-sm text-slate-400">Apply for our mentorship program to accelerate your learning.</p>
                   </div>
 
                   {studentError && (
