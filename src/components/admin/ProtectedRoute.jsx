@@ -1,0 +1,1 @@
+import { Navigate } from 'react-router-dom';const ProtectedRoute = ({ children }) => {  const isAuthenticated = sessionStorage.getItem('adminAuthenticated');  return isAuthenticated ? children : <Navigate to="/admin/login" replace />;};export default ProtectedRoute;
