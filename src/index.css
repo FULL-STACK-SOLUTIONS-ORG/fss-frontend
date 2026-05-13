@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
 @layer base {
@@ -7,10 +7,8 @@
   }
 
   * {
-    font-family: 'Montserrat', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    letter-spacing: -0.01em;
   }
 
   body {
@@ -18,7 +16,8 @@
     font-weight: 400;
     font-size: 0.875rem;
     letter-spacing: -0.01em;
-    @apply bg-slate-950 text-slate-100;
+    background-color: #F5F0E8;
+    color: #1C1A17;
   }
 
   p,
@@ -39,34 +38,31 @@
   h4,
   h5,
   h6 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     line-height: 1.2;
+    color: #1C1A17;
   }
 
   h1 {
     font-weight: 800;
     font-size: 1.75rem;
-    letter-spacing: -0.03em;
   }
 
   h2 {
     font-weight: 700;
     font-size: 1.5rem;
-    letter-spacing: -0.02em;
   }
 
   h3 {
     font-weight: 600;
     font-size: 1.25rem;
-    letter-spacing: -0.02em;
   }
 
   h4 {
     font-weight: 600;
     font-size: 1.125rem;
-    letter-spacing: -0.01em;
   }
 
   h5 {
@@ -81,10 +77,20 @@
 }
 
 @layer components {
-  .font-elegant-heading {
-    font-family: 'Montserrat', sans-serif;
+  .font-serif-heading {
+    font-family: 'Playfair Display', Georgia, serif;
     font-weight: 700;
-    letter-spacing: -0.02em;
+  }
+
+  .font-gold-italic {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    color: #9B7D43;
+  }
+
+  .font-elegant-heading {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
   }
 
   .font-elegant-body {
@@ -138,11 +144,11 @@
   }
 
   .shiny-text {
-    color: #ffffff;
+    color: #F5F0E8;
     background: linear-gradient(120deg,
-        rgba(255, 255, 255, 0) 40%,
-        rgba(255, 255, 255, 0.9) 50%,
-        rgba(255, 255, 255, 0) 60%);
+        rgba(245, 240, 232, 0) 40%,
+        rgba(245, 240, 232, 0.9) 50%,
+        rgba(245, 240, 232, 0) 60%);
     background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
@@ -164,7 +170,7 @@
     height: 100%;
     background: linear-gradient(90deg,
         transparent,
-        rgba(255, 255, 255, 0.4),
+        rgba(245, 240, 232, 0.3),
         transparent);
     transition: left 0.5s;
   }
@@ -188,31 +194,31 @@
   }
 
   .shadow-black-sm {
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 2px 0 rgba(28, 26, 23, 0.08);
   }
 
   .shadow-black-md {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 6px -1px rgba(28, 26, 23, 0.1), 0 2px 4px -1px rgba(28, 26, 23, 0.08);
   }
 
   .shadow-black-lg {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 15px -3px rgba(28, 26, 23, 0.12), 0 4px 6px -2px rgba(28, 26, 23, 0.08);
   }
 
   .shadow-black-xl {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 25px -5px rgba(28, 26, 23, 0.15), 0 10px 10px -5px rgba(28, 26, 23, 0.1);
   }
 
   .shadow-black-2xl {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 25px 50px -12px rgba(28, 26, 23, 0.2);
   }
 
   .hover\:shadow-black-xl:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 25px -5px rgba(28, 26, 23, 0.15), 0 10px 10px -5px rgba(28, 26, 23, 0.1);
   }
 
   .hover\:shadow-black-2xl:hover {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 25px 50px -12px rgba(28, 26, 23, 0.2);
   }
 
   @keyframes flipVertical {

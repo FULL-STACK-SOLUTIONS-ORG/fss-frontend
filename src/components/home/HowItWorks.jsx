@@ -15,19 +15,19 @@ const HowItWorks = () => {
       title: 'Enrolling FSS Program as Free'
     }
   ];
-  const gradientClasses = [
-    'bg-gradient-to-br from-amber-500 via-orange-500 to-red-500',
-    'bg-gradient-to-br from-blue-500 via-indigo-500 to-cyan-500',
-    'bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500'
+  const stepColors = [
+    { bg: 'linear-gradient(135deg, #C9A96E, #9B7D43)', shadow: 'rgba(155,125,67,0.3)' },
+    { bg: 'linear-gradient(135deg, #9B7D43, #6B5530)', shadow: 'rgba(107,85,48,0.3)' },
+    { bg: 'linear-gradient(135deg, #6B5530, #4A3B22)', shadow: 'rgba(74,59,34,0.3)' }
   ];
   return (
-    <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8 relative">
+    <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8 relative" style={{ backgroundColor: '#EDE8DC' }}>
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-slate-100 mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4" style={{ color: '#1C1A17', fontFamily: "'Playfair Display', Georgia, serif" }}>
             How to join FSS Mentorship Program
           </h2>
-          <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: '#5A5550' }}>
             A simple 3-step process to join our mentorship program
           </p>
         </div>
@@ -36,10 +36,17 @@ const HowItWorks = () => {
             {steps.map((step, index) => (
               <React.Fragment key={index}>
                 <div className="flex flex-col items-center">
-                  <div className={`w-16 h-16 rounded-full ${gradientClasses[index % gradientClasses.length]} text-white font-bold text-xl flex items-center justify-center shadow-xl border-4 border-white dark:border-slate-900 mb-4 shadow-gray-400/50 dark:shadow-black/50`}>
+                  <div
+                    className="w-16 h-16 rounded-full text-white font-bold text-xl flex items-center justify-center mb-4"
+                    style={{
+                      background: stepColors[index % stepColors.length].bg,
+                      boxShadow: `0 8px 20px ${stepColors[index % stepColors.length].shadow}`,
+                      border: '3px solid #FAF7F2'
+                    }}
+                  >
                     {step.number}
                   </div>
-                  <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-slate-100 text-center max-w-xs">
+                  <h3 className="text-lg md:text-xl font-bold text-center max-w-xs" style={{ color: '#1C1A17', fontFamily: "'Playfair Display', Georgia, serif" }}>
                     {step.title.split('\n').map((line, i) => (
                       <React.Fragment key={i}>
                         {i > 0 && <br />}
@@ -50,8 +57,8 @@ const HowItWorks = () => {
                 </div>
                 {index < steps.length - 1 && (
                   <div className="hidden md:flex items-center flex-shrink-0 px-4">
-                    <div className="h-1 w-16 bg-gradient-to-r from-teal-500 via-blue-500 to-indigo-500 rounded-full"></div>
-                    <svg className="w-6 h-6 text-indigo-500 dark:text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="h-0.5 w-16 rounded-full" style={{ background: 'linear-gradient(90deg, #C9A96E, #9B7D43)' }}></div>
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" style={{ color: '#9B7D43' }}>
                       <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
                   </div>
@@ -63,7 +70,8 @@ const HowItWorks = () => {
         <div className="mt-16 text-center">
           <Link
             to="/mentorship"
-            className="shiny-button inline-block bg-gradient-to-r from-gray-900 via-black to-gray-800 dark:from-teal-600 dark:via-teal-500 dark:to-teal-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:shadow-2xl hover:shadow-gray-400/50 dark:hover:shadow-teal-500/30 transform hover:scale-105 transition-all duration-300 shadow-lg border border-gray-600/30 dark:border-teal-400/30"
+            className="shiny-button inline-block px-8 py-4 rounded-xl text-lg font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg"
+            style={{ backgroundColor: '#1C1A17', color: '#F5F0E8' }}
           >
             Apply for Mentorship →
           </Link>

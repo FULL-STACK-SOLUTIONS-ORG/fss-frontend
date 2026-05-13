@@ -27,18 +27,16 @@ const Footer = () => {
           <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
         </svg>
       ),
-      url: 'https://www.youtube.com/@FullStackSolutions',
-      color: 'hover:bg-red-600 hover:text-white'
+      url: 'https://www.youtube.com/@FullStackSolutions'
     },
   ];
   return (
-    <footer className="relative bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-800 dark:text-white overflow-hidden transition-colors duration-300">
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-teal-500/10 to-red-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-br from-red-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-blue-500/5 to-teal-500/5 rounded-full blur-3xl"></div>
+    <footer className="relative overflow-hidden transition-colors duration-300" style={{ backgroundColor: '#EDE8DC' }}>
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-96 h-96 rounded-full blur-3xl" style={{ background: 'radial-gradient(circle, rgba(155,125,67,0.08) 0%, transparent 70%)' }}></div>
+        <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full blur-3xl" style={{ background: 'radial-gradient(circle, rgba(155,125,67,0.06) 0%, transparent 70%)' }}></div>
       </div>
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style={{ borderTop: '1px solid #D4B896' }}>
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center">
             <img
@@ -52,24 +50,30 @@ const Footer = () => {
               href="mailto:fullstacksolutions101@gmail.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+              className="flex items-center gap-2 transition-colors"
+              style={{ color: '#5A5550' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#9B7D43'}
+              onMouseLeave={e => e.currentTarget.style.color = '#5A5550'}
             >
-              <svg className="w-5 h-5 text-teal-600 dark:text-teal-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#9B7D43' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
               <span className="text-sm">fullstacksolutions101@gmail.com</span>
             </a>
             <a
               href="tel:+918848118585"
-              className="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+              className="flex items-center gap-2 transition-colors"
+              style={{ color: '#5A5550' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#9B7D43'}
+              onMouseLeave={e => e.currentTarget.style.color = '#5A5550'}
             >
-              <svg className="w-5 h-5 text-teal-600 dark:text-teal-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#9B7D43' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
               <span className="text-sm">+91 8848118585</span>
             </a>
-            <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-              <svg className="w-5 h-5 text-teal-600 dark:text-teal-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-2" style={{ color: '#5A5550' }}>
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#9B7D43' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -83,13 +87,14 @@ const Footer = () => {
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group w-12 h-12 bg-white dark:bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center text-slate-700 dark:text-white transition-all duration-300 transform hover:scale-110 shadow-lg dark:shadow-black-lg ${
-                  social.name === 'YouTube' 
-                    ? 'hover:bg-red-600 hover:text-white hover:shadow-red-600/50' 
-                    : social.name === 'LinkedIn'
-                    ? 'hover:bg-blue-600 hover:text-white hover:shadow-blue-600/50'
-                    : 'hover:bg-gray-800 hover:text-white hover:shadow-gray-800/50'
-                }`}
+                className="group w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 shadow-md"
+                style={{ backgroundColor: '#FAF7F2', color: '#1C1A17', border: '1px solid #E0D8CC' }}
+                onMouseEnter={e => {
+                  if (social.name === 'YouTube') { e.currentTarget.style.backgroundColor = '#dc2626'; e.currentTarget.style.color = 'white'; }
+                  else if (social.name === 'LinkedIn') { e.currentTarget.style.backgroundColor = '#2563eb'; e.currentTarget.style.color = 'white'; }
+                  else { e.currentTarget.style.backgroundColor = '#1C1A17'; e.currentTarget.style.color = 'white'; }
+                }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#FAF7F2'; e.currentTarget.style.color = '#1C1A17'; }}
                 title={social.name}
               >
                 {social.icon}
@@ -100,7 +105,8 @@ const Footer = () => {
       </div>
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-br from-teal-600 to-red-500 hover:from-red-500 hover:to-teal-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 z-50"
+        className="fixed bottom-8 right-8 w-12 h-12 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 z-50"
+        style={{ background: 'linear-gradient(135deg, #9B7D43, #C9A96E)' }}
         title="Back to Top"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

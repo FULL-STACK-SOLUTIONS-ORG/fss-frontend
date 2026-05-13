@@ -29,18 +29,15 @@ const Stats = () => {
     };
   }, [counted]);
   return (
-    <section id="stats-section" className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-teal-500 via-teal-600 to-teal-500 dark:from-gray-900 dark:via-black dark:to-gray-800 transition-colors duration-300">
+    <section id="stats-section" className="py-16 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#2A2520' }}>
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
-            <div
-              key={index}
-              className="text-center"
-            >
-              <div className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2">
+            <div key={index} className="text-center">
+              <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2" style={{ color: '#C9A96E', fontFamily: "'Playfair Display', Georgia, serif" }}>
                 {counted ? `${stat.number}${stat.suffix}` : '0'}
               </div>
-              <div className="text-lg md:text-xl text-white/90 font-semibold">
+              <div className="text-lg md:text-xl font-semibold" style={{ color: '#E8D8B8' }}>
                 {stat.label}
               </div>
             </div>
