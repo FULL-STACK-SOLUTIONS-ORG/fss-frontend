@@ -33,6 +33,10 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
+      - '--build-arg'
+      - 'VITE_API_URL=${_API_URL}'
+      - '--build-arg'
+      - 'VITE_ADMIN_PASSWORD=${_ADMIN_PASSWORD}'
       - '-t'
       - 'gcr.io/$PROJECT_ID/fss-frontend:latest'
       - '-t'
@@ -74,6 +78,7 @@ steps:
 substitutions:
   _API_URL: 'https://fss-backend-338962619538.us-central1.run.app/api'
   _REGION: 'us-central1'
+  _ADMIN_PASSWORD: ''
 
 
 images:

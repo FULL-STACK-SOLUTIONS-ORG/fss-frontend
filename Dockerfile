@@ -12,9 +12,12 @@ RUN npm ci
 # Copy source files
 COPY . .
 
-# Set build-time environment variable
+# Set build-time environment variables
 ARG VITE_API_URL=https://fss-backend-338962619538.us-central1.run.app/api
 ENV VITE_API_URL=$VITE_API_URL
+
+ARG VITE_ADMIN_PASSWORD
+ENV VITE_ADMIN_PASSWORD=$VITE_ADMIN_PASSWORD
 
 # Build the application
 RUN npm run build
