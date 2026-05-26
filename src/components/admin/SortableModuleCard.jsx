@@ -2,14 +2,14 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const SortableModuleCard = ({ 
-  module, 
-  onEdit, 
-  onDelete, 
-  onAddTopic, 
-  onEditTopic, 
-  onDeleteTopic, 
-  currentTopicDragHandlers 
+const SortableModuleCard = ({
+  module,
+  onEdit,
+  onDelete,
+  onAddTopic,
+  onEditTopic,
+  onDeleteTopic,
+  currentTopicDragHandlers
 }) => {
   const {
     attributes,
@@ -25,39 +25,38 @@ const SortableModuleCard = ({
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1000 : 'auto',
-    touchAction: 'none' // Prevent scrolling while dragging
+    touchAction: 'none'
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-slate-800 rounded-xl shadow-lg p-6 border-2 transition-all ${
-        isDragging ? 'border-teal-500 shadow-2xl scale-105' : 'border-slate-700 hover:border-teal-300'
+      className={`bg-white rounded-xl shadow-sm p-6 border-2 transition-all ${
+        isDragging ? 'border-[#9B7D43] shadow-xl scale-105' : 'border-[#D4C9B8] hover:border-[#9B7D43]/50'
       }`}
     >
       <div className="flex items-start justify-between mb-4">
-        {/* Drag Handle & Title */}
         <div className="flex-1 flex gap-3">
-          <button 
-            {...attributes} 
-            {...listeners} 
-            className="mt-1 cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-300 touch-none"
+          <button
+            {...attributes}
+            {...listeners}
+            className="mt-1 cursor-grab active:cursor-grabbing text-[#9A8A7A] hover:text-[#5A5550] touch-none"
             title="Drag to reorder"
           >
-             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-             </svg>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+            </svg>
           </button>
-          
+
           <div>
-            <h3 className="text-xl font-bold text-white mb-2">{module.title}</h3>
+            <h3 className="text-xl font-bold text-[#1C1A17] mb-2">{module.title}</h3>
             {module.category && (
-              <p className="text-sm text-slate-400 mb-3">
+              <p className="text-sm text-[#5A5550] mb-3">
                 <span className="font-semibold">Category:</span> {module.category}
               </p>
             )}
-            <p className="text-xs text-slate-400 font-semibold">
+            <p className="text-xs text-[#5A5550] font-semibold">
               {module.topics?.length || 0} {module.topics?.length === 1 ? 'Topic' : 'Topics'}
             </p>
           </div>
@@ -66,7 +65,7 @@ const SortableModuleCard = ({
         <div className="flex gap-2">
           <button
             onClick={() => onEdit(module)}
-            className="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-900/20 transition-colors"
+            className="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition-colors"
             title="Edit Module"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +74,7 @@ const SortableModuleCard = ({
           </button>
           <button
             onClick={() => onDelete(module._id)}
-            className="text-red-600 hover:text-red-800 p-1.5 rounded-lg hover:bg-red-900/20 transition-colors"
+            className="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors"
             title="Delete Module"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +87,7 @@ const SortableModuleCard = ({
       <div className="mb-4 flex gap-2">
         <button
           onClick={() => onAddTopic(module)}
-          className="flex-1 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm font-semibold flex items-center justify-center gap-2"
+          className="flex-1 px-4 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-colors text-sm font-semibold flex items-center justify-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -97,8 +96,6 @@ const SortableModuleCard = ({
         </button>
       </div>
 
-      {/* Internal Topics List (using existing drag logic passed via props if needed, or keeping as is) */}
-      {/* Note: Nested drag and drop can be complex. For now, we reuse the existing topic specific handlers */}
       {module.topics && module.topics.length > 0 ? (
         <div className="space-y-2 max-h-60 overflow-y-auto">
           {[...module.topics].sort((a, b) => (a.order || 0) - (b.order || 0)).map((topic, index) => (
@@ -109,16 +106,16 @@ const SortableModuleCard = ({
               onDragOver={(e) => currentTopicDragHandlers.onDragOver(e, topic)}
               onDrop={(e) => currentTopicDragHandlers.onDrop(e, topic, module._id)}
               onDragEnd={currentTopicDragHandlers.onDragEnd}
-              className={`flex items-center gap-3 p-3 bg-slate-900 rounded-lg hover:bg-slate-700 transition-colors border border-slate-700 cursor-move ${
-                 currentTopicDragHandlers.draggedTopic?.topic._id === topic._id ? 'opacity-50' : ''
-              } ${currentTopicDragHandlers.draggedOverTopic?._id === topic._id ? 'border-teal-500 bg-teal-50' : ''}`}
+              className={`flex items-center gap-3 p-3 bg-[#FAF7F2] rounded-lg hover:bg-[#F5F0E8] transition-colors border border-[#D4C9B8] cursor-move ${
+                currentTopicDragHandlers.draggedTopic?.topic._id === topic._id ? 'opacity-50' : ''
+              } ${currentTopicDragHandlers.draggedOverTopic?._id === topic._id ? 'border-[#9B7D43] bg-[#9B7D43]/5' : ''}`}
             >
               <div className="flex items-center gap-2 flex-1">
-                <svg className="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-[#9A8A7A] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
                 </svg>
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                  topic.completed ? 'bg-green-500 border-green-500' : 'bg-slate-800 border-slate-600'
+                  topic.completed ? 'bg-green-500 border-green-500' : 'bg-white border-[#D4C9B8]'
                 }`}>
                   {topic.completed && (
                     <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,14 +123,14 @@ const SortableModuleCard = ({
                     </svg>
                   )}
                 </div>
-                <span className={`text-sm text-slate-100 flex-1 ${topic.completed ? 'line-through text-slate-400' : ''}`}>
+                <span className={`text-sm flex-1 ${topic.completed ? 'line-through text-[#9A8A7A]' : 'text-[#1C1A17]'}`}>
                   {topic.name}
                 </span>
               </div>
               <div className="flex gap-1">
                 <button
                   onClick={() => onEditTopic(module, topic)}
-                  className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-900/20 transition-colors"
+                  className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition-colors"
                   title="Edit Topic"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +139,7 @@ const SortableModuleCard = ({
                 </button>
                 <button
                   onClick={() => onDeleteTopic(module._id, topic._id)}
-                  className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-900/20 transition-colors"
+                  className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
                   title="Delete Topic"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,7 +151,7 @@ const SortableModuleCard = ({
           ))}
         </div>
       ) : (
-        <div className="text-center py-4 text-slate-400 text-sm">
+        <div className="text-center py-4 text-[#5A5550] text-sm">
           No topics yet. Click "Add Topic" to get started.
         </div>
       )}

@@ -4,11 +4,9 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { enquiryAPI, mentorAPI, applicantAPI, moduleAPI, userAPI, feedbackAPI, socialMediaAPI, programModuleAPI, progressAPI, clientAPI, activityAPI } from '../services/api';
 import TopicQuizForm from '../components/admin/TopicQuizForm';
-import SocialMediaTracker from '../components/admin/SocialMediaTracker';
 import StudentsSocialMedia from '../components/admin/StudentsSocialMedia';
 import ProgramManagement from '../components/admin/ProgramManagement';
 import TaskVerification from '../components/admin/TaskVerification';
-import TodoList from '../components/admin/TodoList';
 import SortableModuleCard from '../components/admin/SortableModuleCard';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
@@ -17,7 +15,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStr
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('activities');
+  const [activeTab, setActiveTab] = useState('forms');
   const [enquiries, setEnquiries] = useState([]);
   const [mentors, setMentors] = useState([]);
   const [applicants, setApplicants] = useState([]);
@@ -190,7 +188,7 @@ const AdminDashboard = () => {
   });
 
   const [categories, setCategories] = useState([]);
-  const [newCategory, setNewCategory] = useState({ name: '', color: 'bg-slate-700 text-slate-300 border-slate-600' });
+  const [newCategory, setNewCategory] = useState({ name: '', color: 'bg-[#9B7D43]/10 text-[#9B7D43] border-[#9B7D43]/30' });
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [statsPeriod, setStatsPeriod] = useState('all');
   const [statsCategory, setStatsCategory] = useState('all');
@@ -613,12 +611,6 @@ const AdminDashboard = () => {
       fetchUsers();
     } else if (activeTab === 'reviews') {
       fetchReviews();
-    } else if (activeTab === 'clients') {
-      fetchClients();
-    } else if (activeTab === 'activities') {
-      fetchActivities();
-      fetchActivityStats(statsPeriod, statsCategory);
-      fetchCategories();
     }
   }, [statusFilter, currentPage, activeTab, formsView, statsPeriod, statsCategory]);
 
@@ -1293,7 +1285,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       await activityAPI.createCategory(newCategory);
-      setNewCategory({ name: '', color: 'bg-slate-700 text-slate-300 border-slate-600' });
+      setNewCategory({ name: '', color: 'bg-[#9B7D43]/10 text-[#9B7D43] border-[#9B7D43]/30' });
       fetchCategories();
     } catch (err) {
       alert('Failed to create category');
@@ -1612,10 +1604,6 @@ const AdminDashboard = () => {
            }
         } else if (activeTab === 'modules') {
              // modules fetched
-        } else if (activeTab === 'clients') {
-             await Promise.all([fetchClients(), fetchClientStats()]);
-        } else if (activeTab === 'activities') {
-             await Promise.all([fetchActivities(), fetchActivityStats(), fetchCategories()]);
         }
       } catch (err) {
         console.error('Error loading data:', err);
@@ -1667,7 +1655,7 @@ const AdminDashboard = () => {
       approved: 'bg-green-100 text-green-800 border-green-300',
       rejected: 'bg-red-100 text-red-800 border-red-300',
       active: 'bg-blue-100 text-blue-800 border-blue-300',
-      inactive: 'bg-slate-700 text-slate-100 border-slate-600'
+      inactive: 'bg-[#E8E0D4] text-[#5A5550] border-[#D4C9B8]'
     };
     const applicantStatusStyles = {
       pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
@@ -1679,7 +1667,7 @@ const AdminDashboard = () => {
     const statusStyles = type === 'mentor' ? mentorStatusStyles : type === 'applicant' ? applicantStatusStyles : enquiryStatusStyles;
 
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles[status] || 'bg-slate-700 text-slate-100 border-slate-600'}`}>
+      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles[status] || 'bg-[#E8E0D4] text-[#5A5550] border-[#D4C9B8]'}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     );
@@ -1687,10 +1675,10 @@ const AdminDashboard = () => {
 
   if (loading && (activeTab === 'enquiries' ? enquiries.length === 0 : activeTab === 'mentors' ? mentors.length === 0 : activeTab === 'applicants' ? applicants.length === 0 : users.length === 0)) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F5F0E8] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading {activeTab}...</p>
+          <div className="w-16 h-16 border-4 border-[#9B7D43] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#5A5550]">Loading {activeTab}...</p>
         </div>
       </div>
     );
@@ -1702,25 +1690,6 @@ const AdminDashboard = () => {
 
 
   const menuItems = [
-    {
-      id: 'activities',
-      name: 'Daily Activities',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      count: activityStats.total
-    },
-    {
-      id: 'todo',
-      name: 'To-Do List',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-        </svg>
-      )
-    },
     {
       id: 'forms',
       name: 'Forms & Applications',
@@ -1769,26 +1738,6 @@ const AdminDashboard = () => {
         </svg>
       )
     },
-    {
-      id: 'my-social-media',
-      name: 'My Social Media',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
-        </svg>
-      ),
-      count: socialMediaStats.total
-    },
-    {
-      id: 'clients',
-      name: 'Client Receivables',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      ),
-      count: clientStats.totalClients
-    }
   ];
 
 
@@ -1801,25 +1750,25 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex">
+    <div className="min-h-screen bg-[#F5F0E8] flex">
       {/* Sidebar for larger screens */}
-      <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-slate-800 border-r border-slate-700 fixed h-screen transition-all duration-300 z-30 hidden lg:block`}>
+      <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-[#FAF7F2] border-r border-[#D4C9B8] fixed h-screen transition-all duration-300 z-30 hidden lg:block`}>
         <div className="h-full flex flex-col">
           {/* Header */}
-          <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+          <div className="p-4 border-b border-[#D4C9B8] flex items-center justify-between">
             {sidebarOpen && (
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-teal-400 to-blue-400 bg-clip-text text-transparent">
+                <h1 className="text-xl font-bold text-[#1C1A17]" style={{ fontFamily: 'Playfair Display, serif' }}>
                   Admin Panel
                 </h1>
-                <p className="text-xs text-slate-400 mt-1">Dashboard</p>
+                <p className="text-xs text-[#5A5550] mt-1">Dashboard</p>
               </div>
             )}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded-lg hover:bg-slate-700 transition-colors"
+              className="p-2 rounded-lg hover:bg-[#F5F0E8] transition-colors"
             >
-              <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-[#9A8A7A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={sidebarOpen ? "M11 19l-7-7 7-7m8 14l-7-7 7-7" : "M13 5l7 7-7 7M5 5l7 7-7 7"} />
               </svg>
             </button>
@@ -1833,8 +1782,8 @@ const AdminDashboard = () => {
                 onClick={() => handleMenuClick(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                   activeTab === item.id
-                    ? 'bg-gradient-to-r from-teal-500 to-blue-600 text-white shadow-lg'
-                    : 'text-slate-300 hover:bg-slate-700'
+                    ? 'bg-[#9B7D43] text-white shadow-lg'
+                    : 'text-[#5A5550] hover:bg-[#F5F0E8]'
                 }`}
               >
                 <span className="flex-shrink-0">{item.icon}</span>
@@ -1848,10 +1797,10 @@ const AdminDashboard = () => {
           </nav>
 
           {/* Logout */}
-          <div className="p-4 border-t border-slate-700">
+          <div className="p-4 border-t border-[#D4C9B8]">
             <button
               onClick={handleLogout}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-900/20 transition-colors font-semibold ${
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors font-semibold ${
                 !sidebarOpen && 'justify-center'
               }`}
             >
@@ -1873,22 +1822,22 @@ const AdminDashboard = () => {
       )}
 
       {/* Mobile Sidebar */}
-      <aside className={`fixed top-0 left-0 h-full w-64 bg-slate-800 border-r border-slate-700 z-50 transform transition-transform duration-300 lg:hidden ${
+      <aside className={`fixed top-0 left-0 h-full w-64 bg-[#FAF7F2] border-r border-[#D4C9B8] z-50 transform transition-transform duration-300 lg:hidden ${
         mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="h-full flex flex-col">
-          <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+          <div className="p-4 border-b border-[#D4C9B8] flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-teal-400 to-blue-400 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold text-[#1C1A17]" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Admin Panel
               </h1>
-              <p className="text-xs text-slate-400 mt-1">Dashboard</p>
+              <p className="text-xs text-[#5A5550] mt-1">Dashboard</p>
             </div>
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="p-2 rounded-lg hover:bg-slate-700"
+              className="p-2 rounded-lg hover:bg-[#F5F0E8]"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-[#9A8A7A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -1900,15 +1849,15 @@ const AdminDashboard = () => {
                 onClick={() => handleMenuClick(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                   activeTab === item.id
-                    ? 'bg-gradient-to-r from-teal-600 to-blue-600 text-white shadow-lg'
-                    : 'text-slate-300 hover:bg-slate-700'
+                    ? 'bg-[#9B7D43] text-white shadow-lg'
+                    : 'text-[#5A5550] hover:bg-[#F5F0E8]'
                 }`}
               >
                 <span>{item.icon}</span>
                 <span className="flex-1 text-left font-semibold">{item.name}</span>
                 {item.count !== undefined && (
                   <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                    activeTab === item.id ? 'bg-slate-800/20 text-white' : 'bg-slate-700 text-slate-300'
+                    activeTab === item.id ? 'bg-white/20 text-white' : 'bg-[#F5F0E8] border border-[#D4C9B8] text-[#5A5550]'
                   }`}>
                     {item.count}
                   </span>
@@ -1916,10 +1865,10 @@ const AdminDashboard = () => {
               </button>
             ))}
           </nav>
-          <div className="p-4 border-t border-slate-700">
+          <div className="p-4 border-t border-[#D4C9B8]">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-900/20 transition-colors font-semibold"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors font-semibold"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -1933,35 +1882,33 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}>
         {/* Header */}
-        <header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-20">
+        <header className="bg-white border-b border-[#D4C9B8] sticky top-0 z-20">
           <div className="px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setMobileMenuOpen(true)}
-                  className="lg:hidden p-2 rounded-lg hover:bg-slate-700"
+                  className="lg:hidden p-2 rounded-lg hover:bg-[#F5F0E8]"
                 >
-                  <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-[#9A8A7A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                 </button>
                 <div>
-                  <h2 className="text-2xl font-bold text-white capitalize">{activeTab}</h2>
-                  <p className="text-sm text-slate-400">
+                  <h2 className="text-2xl font-bold text-[#1C1A17] capitalize" style={{ fontFamily: 'Playfair Display, serif' }}>{activeTab}</h2>
+                  <p className="text-sm text-[#5A5550]">
                     {activeTab === 'enquiries' && 'Manage customer enquiries'}
                     {activeTab === 'mentors' && 'Manage mentor applications'}
                     {activeTab === 'applicants' && 'Manage student applicants'}
                     {activeTab === 'modules' && 'Manage learning modules and topics'}
 
                     {activeTab === 'users' && 'View all registered users'}
-                    {activeTab === 'social-media' && 'Track social media presence and accountability'}
-                    {activeTab === 'clients' && 'Track client receivables and payments'}
 
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="hidden lg:flex items-center gap-2 text-sm text-slate-400">
+                <div className="hidden lg:flex items-center gap-2 text-sm text-[#5A5550]">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -1975,213 +1922,22 @@ const AdminDashboard = () => {
          {/* Main Content Area */}
         <main className="p-4 sm:px-6 lg:px-8 py-8">
           {activeTab === 'dashboard-management' && <ProgramManagement />}
-          {activeTab === 'clients' && (
-            <div className="space-y-6">
-              
-              {/* Clients Table */}
-              <div className="bg-slate-800 rounded-xl shadow-lg border border-slate-700 overflow-hidden">
-                <div className="p-6 border-b border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4">
-                  <h2 className="text-xl font-bold text-white">Clients List</h2>
-                  <div className="flex gap-4 w-full sm:w-auto">
-                    <div className="relative flex-1 sm:flex-none">
-                      <svg className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                      <input
-                        type="text"
-                        placeholder="Search clients..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                       <button
-                        onClick={() => {
-                          setIsAddInvoiceModalOpen(true);
-                          setInvoiceFormData({ clientId: '', number: '', date: '', amount: 0, description: '' });
-                        }}
-                        className="px-4 py-2 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-white rounded-lg transition-colors flex items-center gap-2"
-                      >
-                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                         Add Invoice
-                      </button>
-                      <button
-                        onClick={() => {
-                           setIsAddPaymentModalOpen(true);
-                           setPaymentFormData({ clientId: '', date: '', amount: 0, remarks: '', allocations: {} });
-                        }}
-                        className="px-4 py-2 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-white rounded-lg transition-colors flex items-center gap-2"
-                      >
-                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                         Add Receipt
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedClient(null);
-                          setIsClientModalOpen(true);
-                          setClientFormData({
-                            companyName: '',
-                            email: '',
-                            status: 'Pending',
-                            invoiceNumber: '',
-                            invoiceDate: '',
-                            payments: []
-                          });
-                        }}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        Add Client
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-slate-700/50 text-slate-400 text-sm uppercase tracking-wider">
-                        <th className="px-6 py-4 font-medium">Name</th>
-                        <th className="px-6 py-4 font-medium">Total Invoices</th>
-                        <th className="px-6 py-4 font-medium">Amount</th>
-                        <th className="px-6 py-4 font-medium">Received</th>
-                        <th className="px-6 py-4 font-medium">Pending</th>
-                        <th className="px-6 py-4 font-medium text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-700">
-                      {loading ? (
-                        <tr>
-                          <td colSpan="6" className="px-6 py-12 text-center text-slate-400">
-                            <div className="flex flex-col items-center">
-                              <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
-                              Loading clients...
-                            </div>
-                          </td>
-                        </tr>
-                      ) : clients.length === 0 ? (
-                        <tr>
-                          <td colSpan="6" className="px-6 py-12 text-center text-slate-400">
-                            No clients found. Add your first client to get started.
-                          </td>
-                        </tr>
-                      ) : (
-                        clients.map((client) => (
-                          <tr key={client._id} className="hover:bg-slate-700/30 transition-colors">
-                            <td className="px-6 py-4">
-                              <div className="flex flex-col">
-                                <span className="font-medium text-white">{client.companyName}</span>
-                                <span className="text-sm text-slate-400">{client.email}</span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                                <div className="flex flex-col">
-                                    <span className="text-white font-bold text-lg">{client.invoices?.length || 0}</span>
-                                    {client.invoices?.some(i => i.status !== 'Paid') && (
-                                         <span className="text-xs text-orange-400">
-                                            {client.invoices.filter(i => i.status !== 'Paid').length} Pending
-                                         </span>
-                                    )}
-                                </div>
-                            </td>
-                            <td className="px-6 py-4">
-                                <span className="text-white font-medium">₹{client.totalAmount?.toLocaleString()}</span>
-                            </td>
-                            <td className="px-6 py-4">
-                                <span className="text-green-400 font-medium">₹{client.receivedAmount?.toLocaleString()}</span>
-                            </td>
-                            <td className="px-6 py-4">
-                                <span className={`${(client.totalAmount - client.receivedAmount) > 0 ? 'text-orange-400' : 'text-slate-400'} font-medium`}>
-                                    ₹{(client.totalAmount - client.receivedAmount)?.toLocaleString()}
-                                </span>
-                            </td>
-                            <td className="px-6 py-4 text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                <button
-                                  onClick={() => generateStatementPDF(client)}
-                                  className="p-2 text-slate-400 hover:bg-slate-500/10 rounded-lg transition-colors"
-                                  title="Download Statement"
-                                >
-                                  <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
-                                    <path d="M9 9a1 1 0 012 0v3.586l1.293-1.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L9 12.586V9z" />
-                                  </svg>
-                                </button>
-                                <button
-                                  onClick={() => handleEditClient(client)}
-                                  className="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
-                                  title="Edit Client"
-                                >
-                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                  </svg>
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteClient(client._id)}
-                                  className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                                  title="Delete Client"
-                                >
-                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-                
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="px-6 py-4 border-t border-slate-700 flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                      className="p-2 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-400"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                    <span className="text-slate-400">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                      disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-400"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
 
           {activeTab === 'tasks' && (
             <TaskVerification />
           )}
 
           {activeTab === 'reviews' && (
-              <div className="bg-slate-800 rounded-xl shadow-black-md overflow-hidden p-6">
-                  <h2 className="text-2xl font-bold text-white mb-6">Pending Review Requests</h2>
+              <div className="bg-white rounded-xl border border-[#D4C9B8] overflow-hidden p-6">
+                  <h2 className="text-2xl font-bold text-[#1C1A17] mb-6">Pending Review Requests</h2>
                   {pendingReviews.length === 0 ? (
-                      <div className="text-center py-12 text-slate-400">
+                      <div className="text-center py-12 text-[#5A5550]">
                           <p>No pending review requests.</p>
                       </div>
                   ) : (
                       <div className="overflow-x-auto">
                           <table className="w-full">
-                              <thead className="bg-slate-700 text-slate-300">
+                              <thead className="bg-[#FAF7F2] text-[#5A5550]">
                                   <tr>
                                       <th className="px-6 py-3 text-left">Student</th>
                                       <th className="px-6 py-3 text-left">Module</th>
@@ -2189,29 +1945,29 @@ const AdminDashboard = () => {
                                       <th className="px-6 py-3 text-left">Actions</th>
                                   </tr>
                               </thead>
-                              <tbody className="divide-y divide-slate-700">
+                              <tbody className="divide-y divide-[#E8E0D4]">
                                   {pendingReviews.map((review, idx) => (
-                                      <tr key={idx} className="hover:bg-slate-750">
-                                          <td className="px-6 py-4 text-white font-medium">{review.user.name}</td>
-                                          <td className="px-6 py-4 text-slate-400">
+                                      <tr key={idx} className="hover:bg-[#FAF7F2]">
+                                          <td className="px-6 py-4 text-[#1C1A17] font-medium">{review.user.name}</td>
+                                          <td className="px-6 py-4 text-[#5A5550]">
                                             {(() => {
                                               const module = programModules.find(m => m._id === review.moduleId);
                                               return module ? `Module ${module.moduleNumber}: ${module.title}` : 'Unknown Module';
                                             })()}
                                           </td>
                                           <td className="px-6 py-4">
-                                              <span className="bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded text-xs border border-yellow-500/20">
+                                              <span className="bg-yellow-50 text-yellow-700 px-2 py-1 rounded text-xs border border-yellow-200">
                                                   {review.reviewRequestStatus}
                                               </span>
                                           </td>
                                           <td className="px-6 py-4">
                                               <div className="flex gap-2">
-                                                <button 
+                                                <button
                                                     onClick={() => {
                                                         setSelectedReview(review);
                                                         setIsMeetModalOpen(true);
                                                     }}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm transition-colors"
+                                                    className="bg-[#9B7D43] hover:bg-[#7A6235] text-white px-3 py-1.5 rounded-lg text-sm transition-colors"
                                                 >
                                                     Schedule Review
                                                 </button>
@@ -2252,39 +2008,39 @@ const AdminDashboard = () => {
                   {/* Schedule Modal */}
                   {isMeetModalOpen && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-                      <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md border border-slate-700 shadow-2xl">
-                        <h3 className="text-xl font-bold text-white mb-4">Schedule Review for {selectedReview?.user.name}</h3>
+                      <div className="bg-white rounded-xl p-6 w-full max-w-md border border-[#D4C9B8] shadow-2xl">
+                        <h3 className="text-xl font-bold text-[#1C1A17] mb-4">Schedule Review for {selectedReview?.user.name}</h3>
                         <form onSubmit={handleScheduleReview} className="space-y-4">
                           <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-1">Google Meet Link</label>
+                            <label className="block text-sm font-medium text-[#5A5550] mb-1">Google Meet Link</label>
                             <input
                               type="url"
                               required
                               value={meetLink}
                               onChange={(e) => setMeetLink(e.target.value)}
-                              className="w-full bg-slate-700 border-slate-600 rounded-lg text-white px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
+                              className="w-full bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] px-4 py-2 focus:ring-[#9B7D43] focus:border-[#9B7D43] focus:outline-none"
                               placeholder="https://meet.google.com/..."
                             />
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-1">Date</label>
-                                <input 
-                                    type="date" 
+                                <label className="block text-sm font-medium text-[#5A5550] mb-1">Date</label>
+                                <input
+                                    type="date"
                                     required
                                     value={meetDate}
                                     onChange={(e) => setMeetDate(e.target.value)}
-                                    className="w-full bg-slate-700 border-slate-600 rounded-lg text-white px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
+                                    className="w-full bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] px-4 py-2 focus:ring-[#9B7D43] focus:border-[#9B7D43] focus:outline-none"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-1">Time</label>
-                                <input 
-                                    type="time" 
+                                <label className="block text-sm font-medium text-[#5A5550] mb-1">Time</label>
+                                <input
+                                    type="time"
                                     required
                                     value={meetTime}
                                     onChange={(e) => setMeetTime(e.target.value)}
-                                    className="w-full bg-slate-700 border-slate-600 rounded-lg text-white px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
+                                    className="w-full bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] px-4 py-2 focus:ring-[#9B7D43] focus:border-[#9B7D43] focus:outline-none"
                                 />
                             </div>
                           </div>
@@ -2295,13 +2051,13 @@ const AdminDashboard = () => {
                                   setIsMeetModalOpen(false);
                                   setMeetLink('');
                               }}
-                              className="px-4 py-2 text-slate-300 hover:bg-slate-700 rounded-lg"
+                              className="px-4 py-2 text-[#5A5550] hover:text-[#1C1A17] rounded-lg"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                              className="px-4 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg"
                             >
                               Send Link
                             </button>
@@ -2314,19 +2070,19 @@ const AdminDashboard = () => {
           )}
 
           {activeTab === 'reviews' && (
-              <div className="bg-slate-800 rounded-xl shadow-black-md overflow-hidden p-6 mt-8">
-                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+              <div className="bg-white rounded-xl border border-[#D4C9B8] overflow-hidden p-6 mt-8">
+                  <h2 className="text-2xl font-bold text-[#1C1A17] mb-6 flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-[#9B7D43]"></span>
                       Scheduled Reviews
                   </h2>
                   {scheduledReviews.length === 0 ? (
-                      <div className="text-center py-12 text-slate-400">
+                      <div className="text-center py-12 text-[#5A5550]">
                           <p>No scheduled reviews.</p>
                       </div>
                   ) : (
                       <div className="overflow-x-auto">
                           <table className="w-full">
-                              <thead className="bg-slate-700 text-slate-300">
+                              <thead className="bg-[#FAF7F2] text-[#5A5550]">
                                   <tr>
                                       <th className="px-6 py-3 text-left">Student</th>
                                       <th className="px-6 py-3 text-left">Module</th>
@@ -2334,18 +2090,18 @@ const AdminDashboard = () => {
                                       <th className="px-6 py-3 text-left">Actions</th>
                                   </tr>
                               </thead>
-                              <tbody className="divide-y divide-slate-700">
+                              <tbody className="divide-y divide-[#E8E0D4]">
                                   {scheduledReviews.map((review, idx) => (
-                                      <tr key={idx} className="hover:bg-slate-750">
-                                          <td className="px-6 py-4 text-white font-medium">{review.user.name}</td>
-                                          <td className="px-6 py-4 text-slate-400">
+                                      <tr key={idx} className="hover:bg-[#FAF7F2]">
+                                          <td className="px-6 py-4 text-[#1C1A17] font-medium">{review.user.name}</td>
+                                          <td className="px-6 py-4 text-[#5A5550]">
                                             {(() => {
                                               const module = programModules.find(m => m._id === review.moduleId);
                                               return module ? `Module ${module.moduleNumber}: ${module.title}` : 'Unknown Module';
                                             })()}
                                           </td>
-                                          <td className="px-6 py-4 text-slate-400 max-w-xs truncate">
-                                              <a href={review.meetLink?.match(/^https?:\/\//i) ? review.meetLink : `https://${review.meetLink}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                                          <td className="px-6 py-4 text-[#5A5550] max-w-xs truncate">
+                                              <a href={review.meetLink?.match(/^https?:\/\//i) ? review.meetLink : `https://${review.meetLink}`} target="_blank" rel="noopener noreferrer" className="text-[#9B7D43] hover:text-[#7A6235] flex items-center gap-1">
                                                   Link <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                                               </a>
                                           </td>
@@ -2397,31 +2153,27 @@ const AdminDashboard = () => {
               </div>
           )}
 
-          {activeTab === 'my-social-media' && <SocialMediaTracker statusFilter={statusFilter} />}
-          
           {activeTab === 'users' && usersView === 'social-media' && <StudentsSocialMedia />}
 
-          {activeTab === 'todo' && <TodoList />}
-
-          {!['dashboard-management', 'my-social-media', 'management', 'todo', 'activities'].includes(activeTab) && (
-        <div className="bg-slate-800 rounded-xl shadow-black-md p-6 mb-6">
+          {!['dashboard-management', 'management'].includes(activeTab) && (
+        <div className="bg-white rounded-xl border border-[#D4C9B8] p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
-            
+
             {activeTab === 'forms' && (
-              <div className="flex bg-slate-700 rounded-xl p-1 w-fit flex-wrap gap-1">
+              <div className="flex bg-[#F5F0E8] border border-[#D4C9B8] rounded-xl p-1 w-fit flex-wrap gap-1">
                 <button
                   onClick={() => { setFormsView('enquiries'); setCurrentPage(1); }}
                   className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-                    formsView === 'enquiries' 
-                      ? 'bg-blue-600 text-white shadow-lg' 
-                      : 'text-slate-400 hover:text-slate-200'
+                    formsView === 'enquiries'
+                      ? 'bg-[#9B7D43] text-white shadow-sm'
+                      : 'text-[#5A5550] hover:text-[#1C1A17]'
                   }`}
                 >
                   Enquiries
                   <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                    formsView === 'enquiries' 
-                      ? 'bg-blue-700 text-white' 
-                      : 'bg-slate-600 text-slate-300'
+                    formsView === 'enquiries'
+                      ? 'bg-[#7A6235] text-white'
+                      : 'bg-white border border-[#D4C9B8] text-[#5A5550]'
                   }`}>
                     {enquiryStats.total}
                   </span>
@@ -2429,16 +2181,16 @@ const AdminDashboard = () => {
                 <button
                   onClick={() => { setFormsView('feedbacks'); setCurrentPage(1); }}
                   className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-                    formsView === 'feedbacks' 
-                      ? 'bg-blue-600 text-white shadow-lg' 
-                      : 'text-slate-400 hover:text-slate-200'
+                    formsView === 'feedbacks'
+                      ? 'bg-[#9B7D43] text-white shadow-sm'
+                      : 'text-[#5A5550] hover:text-[#1C1A17]'
                   }`}
                 >
                   Feedbacks
                   <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                    formsView === 'feedbacks' 
-                      ? 'bg-blue-700 text-white' 
-                      : 'bg-slate-600 text-slate-300'
+                    formsView === 'feedbacks'
+                      ? 'bg-[#7A6235] text-white'
+                      : 'bg-white border border-[#D4C9B8] text-[#5A5550]'
                   }`}>
                     {feedbacks.length}
                   </span>
@@ -2446,16 +2198,16 @@ const AdminDashboard = () => {
                 <button
                   onClick={() => { setFormsView('mentors'); setCurrentPage(1); }}
                   className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-                    formsView === 'mentors' 
-                      ? 'bg-teal-600 text-white shadow-lg' 
-                      : 'text-slate-400 hover:text-slate-200'
+                    formsView === 'mentors'
+                      ? 'bg-[#9B7D43] text-white shadow-sm'
+                      : 'text-[#5A5550] hover:text-[#1C1A17]'
                   }`}
                 >
                   Mentors
                   <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                    formsView === 'mentors' 
-                      ? 'bg-teal-700 text-white' 
-                      : 'bg-slate-600 text-slate-300'
+                    formsView === 'mentors'
+                      ? 'bg-[#7A6235] text-white'
+                      : 'bg-white border border-[#D4C9B8] text-[#5A5550]'
                   }`}>
                     {mentorStats.total}
                   </span>
@@ -2463,16 +2215,16 @@ const AdminDashboard = () => {
                 <button
                   onClick={() => { setFormsView('applicants'); setCurrentPage(1); }}
                   className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-                    formsView === 'applicants' 
-                      ? 'bg-teal-600 text-white shadow-lg' 
-                      : 'text-slate-400 hover:text-slate-200'
+                    formsView === 'applicants'
+                      ? 'bg-[#9B7D43] text-white shadow-sm'
+                      : 'text-[#5A5550] hover:text-[#1C1A17]'
                   }`}
                 >
                   Applicants
                   <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                    formsView === 'applicants' 
-                      ? 'bg-teal-700 text-white' 
-                      : 'bg-slate-600 text-slate-300'
+                    formsView === 'applicants'
+                      ? 'bg-[#7A6235] text-white'
+                      : 'bg-white border border-[#D4C9B8] text-[#5A5550]'
                   }`}>
                     {applicantStats.total}
                   </span>
@@ -2481,20 +2233,20 @@ const AdminDashboard = () => {
             )}
 
             {activeTab === 'users' && (
-              <div className="flex bg-slate-700 rounded-xl p-1 w-fit flex-wrap gap-1">
+              <div className="flex bg-[#F5F0E8] border border-[#D4C9B8] rounded-xl p-1 w-fit flex-wrap gap-1">
                 <button
                   onClick={() => { setUsersView('registered'); setCurrentPage(1); }}
                   className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-                    usersView === 'registered' 
-                      ? 'bg-blue-600 text-white shadow-lg' 
-                      : 'text-slate-400 hover:text-slate-200'
+                    usersView === 'registered'
+                      ? 'bg-[#9B7D43] text-white shadow-sm'
+                      : 'text-[#5A5550] hover:text-[#1C1A17]'
                   }`}
                 >
                   Registered Users
                   <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                    usersView === 'registered' 
-                      ? 'bg-blue-700 text-white' 
-                      : 'bg-slate-600 text-slate-300'
+                    usersView === 'registered'
+                      ? 'bg-[#7A6235] text-white'
+                      : 'bg-white border border-[#D4C9B8] text-[#5A5550]'
                   }`}>
                     {userStats.total}
                   </span>
@@ -2502,9 +2254,9 @@ const AdminDashboard = () => {
                 <button
                   onClick={() => { setUsersView('social-media'); setCurrentPage(1); }}
                   className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
-                    usersView === 'social-media' 
-                      ? 'bg-purple-600 text-white shadow-lg' 
-                      : 'text-slate-400 hover:text-slate-200'
+                    usersView === 'social-media'
+                      ? 'bg-[#9B7D43] text-white shadow-sm'
+                      : 'text-[#5A5550] hover:text-[#1C1A17]'
                   }`}
                 >
                   Students Social Media
@@ -2513,13 +2265,13 @@ const AdminDashboard = () => {
             )}
 
             {activeTab === 'management' && (
-              <div className="flex bg-slate-700 rounded-xl p-1 w-fit flex-wrap gap-1">
+              <div className="flex bg-[#F5F0E8] border border-[#D4C9B8] rounded-xl p-1 w-fit flex-wrap gap-1">
                 <button
                   onClick={() => { setManagementView('tasks'); setCurrentPage(1); }}
                   className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
-                    managementView === 'tasks' 
-                      ? 'bg-orange-600 text-white shadow-lg' 
-                      : 'text-slate-400 hover:text-slate-200'
+                    managementView === 'tasks'
+                      ? 'bg-[#9B7D43] text-white shadow-sm'
+                      : 'text-[#5A5550] hover:text-[#1C1A17]'
                   }`}
                 >
                   Task Management
@@ -2527,9 +2279,9 @@ const AdminDashboard = () => {
                 <button
                   onClick={() => { setManagementView('reviews'); setCurrentPage(1); }}
                   className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
-                    managementView === 'reviews' 
-                      ? 'bg-pink-600 text-white shadow-lg' 
-                      : 'text-slate-400 hover:text-slate-200'
+                    managementView === 'reviews'
+                      ? 'bg-[#9B7D43] text-white shadow-sm'
+                      : 'text-[#5A5550] hover:text-[#1C1A17]'
                   }`}
                 >
                   Review Management
@@ -2543,10 +2295,10 @@ const AdminDashboard = () => {
         {activeTab === 'modules' ? (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-white">Modules & Topics Management</h2>
+              <h2 className="text-2xl font-bold text-[#1C1A17]">Modules & Topics Management</h2>
               <button
                 onClick={() => setIsModuleModalOpen(true)}
-                className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold flex items-center gap-2"
+                className="px-4 py-2 bg-[#9B7D43] text-white rounded-lg hover:bg-[#7A6235] transition-colors font-semibold flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -2555,17 +2307,17 @@ const AdminDashboard = () => {
               </button>
             </div>
             {loading && modules.length === 0 ? (
-              <div className="bg-slate-800 rounded-xl shadow-md p-12 text-center">
-                <div className="w-16 h-16 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-slate-400">Loading modules...</p>
+              <div className="bg-white rounded-xl border border-[#D4C9B8] p-12 text-center">
+                <div className="w-16 h-16 border-4 border-[#9B7D43] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-[#5A5550]">Loading modules...</p>
               </div>
             ) : modules.length === 0 ? (
-              <div className="bg-slate-800 rounded-xl shadow-md p-12 text-center">
-                <svg className="w-16 h-16 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-white rounded-xl border border-[#D4C9B8] p-12 text-center">
+                <svg className="w-16 h-16 text-[#9A8A7A] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                <p className="text-slate-400 text-lg font-semibold">No modules found</p>
-                <p className="text-slate-400 text-sm mt-2">Click "Add Module" to create your first module</p>
+                <p className="text-[#5A5550] text-lg font-semibold">No modules found</p>
+                <p className="text-[#5A5550] text-sm mt-2">Click "Add Module" to create your first module</p>
               </div>
             ) : (
               <DndContext
@@ -2607,7 +2359,7 @@ const AdminDashboard = () => {
             )}
           </div>
         ) : ['dashboard-management', 'my-social-media', 'students-social-media', 'reviews', 'tasks', 'clients', 'activities'].includes(activeTab) ? null : error ? (
-          <div className="bg-red-900/30 border-2 border-red-500 rounded-xl p-6 text-center">
+          <div className="bg-red-50 border-2 border-red-300 rounded-xl p-6 text-center">
             <p className="text-red-700 font-semibold">{error}</p>
             <button
               onClick={() => {
@@ -2624,70 +2376,69 @@ const AdminDashboard = () => {
             </button>
           </div>
         ) : currentData.length === 0 ? (
-          <div className="bg-slate-800 rounded-xl shadow-black-md p-12 text-center">
-            <svg className="w-16 h-16 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-white rounded-xl border border-[#D4C9B8] p-12 text-center">
+            <svg className="w-16 h-16 text-[#9A8A7A] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={activeTab === 'forms' ? "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" : "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"} />
             </svg>
-            <p className="text-slate-400 text-lg font-semibold">
+            <p className="text-[#5A5550] text-lg font-semibold">
               No {activeTab === 'forms' ? formsView : activeTab} found
             </p>
-            <p className="text-slate-400 text-sm mt-2">
+            <p className="text-[#5A5550] text-sm mt-2">
               {statusFilter !== 'all' ? 'Try adjusting your filters' : `No ${activeTab === 'forms' ? formsView : activeTab} have been submitted yet`}
             </p>
           </div>
         ) : (
-             <div className="bg-slate-800 rounded-xl shadow-black-md overflow-hidden">
+             <div className="bg-white rounded-xl border border-[#D4C9B8] overflow-hidden">
 
-      
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gradient-to-r from-slate-800 to-slate-700">
+                    <thead className="bg-[#FAF7F2]">
                       <tr>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-[#5A5550] uppercase tracking-wider">
                           {(activeTab === 'forms' && formsView === 'feedbacks') ? 'User' : 'Name'}
                         </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-[#5A5550] uppercase tracking-wider">
                            {(activeTab === 'users') ? 'Total Points' : (activeTab === 'forms' && formsView === 'feedbacks') ? 'Email' : 'Contact'}
                         </th>
                         {(activeTab === 'forms' && (formsView === 'mentors' || formsView === 'applicants')) && (
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-[#5A5550] uppercase tracking-wider">
                              Applied Date
                           </th>
                         )}
                         {(activeTab === 'forms' && (formsView === 'enquiries' || formsView === 'feedbacks')) && (
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Message</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-[#5A5550] uppercase tracking-wider">Message</th>
                         )}
                         {activeTab === 'users' ? (
                           <>
-                            <th className="px-6 py-4 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Ranking</th>
-                            <th className="px-6 py-4 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Topics</th>
-                            <th className="px-6 py-4 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Streak</th>
-                            <th className="px-6 py-4 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Dashboard Access</th>
+                            <th className="px-6 py-4 text-center text-xs font-semibold text-[#5A5550] uppercase tracking-wider">Ranking</th>
+                            <th className="px-6 py-4 text-center text-xs font-semibold text-[#5A5550] uppercase tracking-wider">Topics</th>
+                            <th className="px-6 py-4 text-center text-xs font-semibold text-[#5A5550] uppercase tracking-wider">Streak</th>
+                            <th className="px-6 py-4 text-center text-xs font-semibold text-[#5A5550] uppercase tracking-wider">Dashboard Access</th>
                           </>
                         ) : null}
                         {activeTab !== 'users' && !(activeTab === 'forms' && (formsView === 'mentors' || formsView === 'applicants')) && (
-                          <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Date</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-[#5A5550] uppercase tracking-wider">Date</th>
                         )}
-                        <th className="px-6 py-4 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">Actions</th>
+                        <th className="px-6 py-4 text-center text-xs font-semibold text-[#5A5550] uppercase tracking-wider">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-[#E8E0D4]">
                       {activeTab === 'forms' && formsView === 'enquiries' ? (
                         enquiries.map((enquiry) => (
-                          <tr key={enquiry._id} className="hover:bg-slate-900 transition-colors">
+                          <tr key={enquiry._id} className="hover:bg-[#FAF7F2] transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="font-semibold text-white">{enquiry.name}</div>
+                              <div className="font-semibold text-[#1C1A17]">{enquiry.name}</div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="text-sm text-white">{enquiry.email}</div>
-                              <div className="text-sm text-slate-400">{enquiry.phone}</div>
+                              <div className="text-sm text-[#1C1A17]">{enquiry.email}</div>
+                              <div className="text-sm text-[#5A5550]">{enquiry.phone}</div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="text-sm text-slate-300 max-w-xs truncate" title={enquiry.message}>
+                              <div className="text-sm text-[#5A5550] max-w-xs truncate" title={enquiry.message}>
                                 {enquiry.message || 'No message'}
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#5A5550]">
                               {formatDate(enquiry.createdAt)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -2695,7 +2446,7 @@ const AdminDashboard = () => {
                                 <select
                                   value={enquiry.status}
                                   onChange={(e) => handleStatusUpdate(enquiry._id, e.target.value)}
-                                  className="text-xs px-2 py-1 border border-slate-600 rounded-lg focus:outline-none focus:border-teal-500"
+                                  className="text-xs px-2 py-1 border border-[#D4C9B8] rounded-lg focus:outline-none focus:border-[#9B7D43] text-[#1C1A17] bg-white"
                                 >
                                   <option value="pending">Pending</option>
                                   <option value="contacted">Contacted</option>
@@ -2715,26 +2466,26 @@ const AdminDashboard = () => {
                         ))
                       ) : activeTab === 'forms' && formsView === 'feedbacks' ? (
                         feedbacks.map((feedback) => (
-                          <tr key={feedback._id} className="hover:bg-slate-900 transition-colors">
+                          <tr key={feedback._id} className="hover:bg-[#FAF7F2] transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white">
+                                <div className="h-8 w-8 rounded-full bg-[#9B7D43]/10 border border-[#D4C9B8] flex items-center justify-center text-xs font-bold text-[#9B7D43]">
                                   {feedback.user?.name?.charAt(0) || '?'}
                                 </div>
                                 <div>
-                                  <div className="font-semibold text-white">{feedback.user?.name || 'Unknown User'}</div>
+                                  <div className="font-semibold text-[#1C1A17]">{feedback.user?.name || 'Unknown User'}</div>
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="text-sm text-slate-400">{feedback.user?.email || '-'}</div>
+                              <div className="text-sm text-[#5A5550]">{feedback.user?.email || '-'}</div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="text-sm text-slate-300 max-w-xs truncate" title={feedback.message}>
+                              <div className="text-sm text-[#5A5550] max-w-xs truncate" title={feedback.message}>
                                 {feedback.message}
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#5A5550]">
                                {formatDate(feedback.createdAt)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -2752,22 +2503,22 @@ const AdminDashboard = () => {
                         ))
                       ) : activeTab === 'forms' && formsView === 'mentors' ? (
                         mentors.map((mentor) => (
-                          <tr key={mentor._id} className="hover:bg-slate-900 transition-colors">
+                          <tr key={mentor._id} className="hover:bg-[#FAF7F2] transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="font-semibold text-white">{mentor.name}</div>
+                              <div className="font-semibold text-[#1C1A17]">{mentor.name}</div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="text-sm text-white">{mentor.email}</div>
-                              <div className="text-sm text-slate-400">{mentor.phone}</div>
+                              <div className="text-sm text-[#1C1A17]">{mentor.email}</div>
+                              <div className="text-sm text-[#5A5550]">{mentor.phone}</div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#5A5550]">
                               {formatDate(mentor.createdAt)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-center">
                               <div className="flex items-center justify-center gap-2">
                                 <button
                                   onClick={() => handleViewMentor(mentor)}
-                                  className="text-teal-600 hover:text-teal-800 p-1.5 border border-teal-300 rounded-lg hover:bg-teal-50 transition-colors"
+                                  className="text-[#9B7D43] hover:text-[#7A6235] p-1.5 border border-[#D4C9B8] rounded-lg hover:bg-[#FAF7F2] transition-colors"
                                   title="View Details"
                                 >
                                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2778,7 +2529,7 @@ const AdminDashboard = () => {
                                 <select
                                   value={mentor.status}
                                   onChange={(e) => handleStatusUpdate(mentor._id, e.target.value)}
-                                  className="text-xs px-2 py-1 border border-slate-600 rounded-lg focus:outline-none focus:border-teal-500"
+                                  className="text-xs px-2 py-1 border border-[#D4C9B8] rounded-lg focus:outline-none focus:border-[#9B7D43] text-[#1C1A17] bg-white"
                                 >
                                   <option value="pending">Pending</option>
                                   <option value="approved">Approved</option>
@@ -2799,22 +2550,22 @@ const AdminDashboard = () => {
                         ))
                       ) : activeTab === 'forms' && formsView === 'applicants' ? (
                          applicants.map((applicant) => (
-                          <tr key={applicant._id} className="hover:bg-slate-900 transition-colors">
+                          <tr key={applicant._id} className="hover:bg-[#FAF7F2] transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="font-semibold text-white">{applicant.fullName}</div>
+                              <div className="font-semibold text-[#1C1A17]">{applicant.fullName}</div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="text-sm text-white">{applicant.email}</div>
-                              <div className="text-sm text-slate-400">{applicant.phone}</div>
+                              <div className="text-sm text-[#1C1A17]">{applicant.email}</div>
+                              <div className="text-sm text-[#5A5550]">{applicant.phone}</div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#5A5550]">
                               {formatDate(applicant.createdAt)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-center">
                               <div className="flex items-center justify-center gap-2">
                                 <button
                                   onClick={() => handleViewApplicant(applicant)}
-                                  className="text-teal-600 hover:text-teal-800 p-1.5 border border-teal-300 rounded-lg hover:bg-teal-50 transition-colors"
+                                  className="text-[#9B7D43] hover:text-[#7A6235] p-1.5 border border-[#D4C9B8] rounded-lg hover:bg-[#FAF7F2] transition-colors"
                                   title="View Details"
                                 >
                                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2825,7 +2576,7 @@ const AdminDashboard = () => {
                                 <select
                                   value={applicant.status}
                                   onChange={(e) => handleStatusUpdate(applicant._id, e.target.value)}
-                                  className="text-xs px-2 py-1 border border-slate-600 rounded-lg focus:outline-none focus:border-teal-500"
+                                  className="text-xs px-2 py-1 border border-[#D4C9B8] rounded-lg focus:outline-none focus:border-[#9B7D43] text-[#1C1A17] bg-white"
                                 >
                                   <option value="pending">Pending</option>
                                   <option value="reviewed">Reviewed</option>
@@ -2847,23 +2598,23 @@ const AdminDashboard = () => {
                         ))
                       ) : activeTab === 'users' ? (
                         users.map((user) => (
-                          <tr key={user._id} className="hover:bg-slate-900 transition-colors">
+                          <tr key={user._id} className="hover:bg-[#FAF7F2] transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="font-semibold text-white">{user.name}</div>
+                              <div className="font-semibold text-[#1C1A17]">{user.name}</div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="text-sm font-bold text-teal-400">{user.points || 0}</div>
+                              <div className="text-sm font-bold text-[#9B7D43]">{user.points || 0}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-center">
                               <div className="flex items-center justify-center">
-                                <span className="px-3 py-1 rounded-lg text-sm font-bold bg-purple-900/30 text-purple-400 border border-purple-500/30">
+                                <span className="px-3 py-1 rounded-lg text-sm font-bold bg-purple-50 text-purple-700 border border-purple-200">
                                   #{user.ranking || 'N/A'}
                                 </span>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-center">
                               <div className="flex items-center justify-center">
-                                <span className="px-3 py-1 rounded-lg text-sm font-bold bg-teal-900/30 text-teal-400 border border-teal-500/30">
+                                <span className="px-3 py-1 rounded-lg text-sm font-bold bg-[#9B7D43]/10 text-[#9B7D43] border border-[#9B7D43]/30">
                                   {user.completedTopicsCount || 0}
                                 </span>
                               </div>
@@ -2873,12 +2624,12 @@ const AdminDashboard = () => {
                                 {user.activityStreak > 0 ? (
                                   <>
                                     <span className="text-lg">🔥</span>
-                                    <span className="px-3 py-1 rounded-lg text-sm font-bold bg-orange-900/30 text-orange-400 border border-orange-500/30">
+                                    <span className="px-3 py-1 rounded-lg text-sm font-bold bg-orange-50 text-orange-700 border border-orange-200">
                                       {user.activityStreak} {user.activityStreak === 1 ? 'day' : 'days'}
                                     </span>
                                   </>
                                 ) : (
-                                  <span className="text-xs text-slate-500">No streak</span>
+                                  <span className="text-xs text-[#9A8A7A]">No streak</span>
                                 )}
                               </div>
                             </td>
@@ -2919,7 +2670,7 @@ const AdminDashboard = () => {
                                 </button>
                                 <button
                                   onClick={() => handleUserEditOpen(user)}
-                                  className="text-teal-600 hover:text-teal-800 p-1"
+                                  className="text-[#9B7D43] hover:text-[#7A6235] p-1"
                                   title="Edit Profile"
                                 >
                                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2949,17 +2700,17 @@ const AdminDashboard = () => {
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-slate-700"
+                  className="px-4 py-2 bg-white text-[#1C1A17] rounded-lg hover:bg-[#FAF7F2] disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-[#D4C9B8]"
                 >
                   Previous
                 </button>
-                <div className="text-slate-400 font-medium">
-                  Page <span className="text-white">{currentPage}</span> of <span className="text-white">{totalPages}</span>
+                <div className="text-[#5A5550] font-medium">
+                  Page <span className="text-[#1C1A17]">{currentPage}</span> of <span className="text-[#1C1A17]">{totalPages}</span>
                 </div>
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-slate-700"
+                  className="px-4 py-2 bg-white text-[#1C1A17] rounded-lg hover:bg-[#FAF7F2] disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-[#D4C9B8]"
                 >
                   Next
                 </button>
@@ -2969,301 +2720,53 @@ const AdminDashboard = () => {
 
         )}
 
-      {/* Daily Activities Tab */}
-      {activeTab === 'activities' && (
-        <div className="space-y-6">
-          {/* Filters & Actions */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-800 p-4 rounded-xl border border-slate-700">
-             <div className="flex gap-4">
-               <div>
-                  <label className="text-xs text-slate-400 block mb-1">Time Period</label>
-                  <select 
-                    value={statsPeriod} 
-                    onChange={(e) => setStatsPeriod(e.target.value)}
-                    className="bg-slate-700 text-white text-sm rounded-lg px-3 py-2 border border-slate-600 focus:ring-teal-500"
-                  >
-                    <option value="all">All Time</option>
-                    <option value="daily">Today</option>
-                    <option value="weekly">This Week</option>
-                    <option value="monthly">This Month</option>
-                  </select>
-               </div>
-               <div>
-                  <label className="text-xs text-slate-400 block mb-1">Report Category</label>
-                  <select 
-                    value={statsCategory} 
-                    onChange={(e) => setStatsCategory(e.target.value)}
-                    className="bg-slate-700 text-white text-sm rounded-lg px-3 py-2 border border-slate-600 focus:ring-teal-500"
-                  >
-                    <option value="all">All Categories</option>
-                    {!categories.find(c => c.name === 'To-do') && (
-                      <option value="To-do">To-do</option>
-                    )}
-                    {categories.map(cat => (
-                      <option key={cat._id} value={cat.name}>{cat.name}</option>
-                    ))}
-                  </select>
-               </div>
-             </div>
-             <button
-               onClick={() => setIsCategoryModalOpen(true)}
-               className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors border border-slate-600 text-sm font-medium"
-             >
-               Add / Manage Categories
-             </button>
-          </div>
-
-          {/* Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-teal-600 to-teal-700 rounded-xl p-6 shadow-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-teal-100 text-sm font-medium">
-                    Total Activities {statsPeriod === 'daily' ? '(Today)' : statsPeriod === 'weekly' ? '(Weekly)' : statsPeriod === 'monthly' ? '(Monthly)' : '(All Time)'}
-                  </p>
-                  <p className="text-3xl font-bold text-white mt-2">{activityStats.total}</p>
-                </div>
-                <div className="bg-teal-500/30 p-3 rounded-lg">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 shadow-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-sm font-medium">
-                    Total Hours {statsPeriod === 'daily' ? '(Today)' : statsPeriod === 'weekly' ? '(Weekly)' : statsPeriod === 'monthly' ? '(Monthly)' : '(All Time)'}
-                  </p>
-                  <p className="text-3xl font-bold text-white mt-2">{activityStats.totalHours}</p>
-                </div>
-                <div className="bg-blue-500/30 p-3 rounded-lg">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-6 shadow-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-100 text-sm font-medium">Avg. Daily Hours</p>
-                  <p className="text-3xl font-bold text-white mt-2">
-                    {(activityStats.totalHours / (statsPeriod === 'daily' ? 1 : statsPeriod === 'weekly' ? 7 : statsPeriod === 'monthly' ? 30 : 1)).toFixed(1)}
-                  </p>
-                </div>
-                <div className="bg-purple-500/30 p-3 rounded-lg">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl p-6 shadow-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-orange-100 text-sm font-medium">Categories</p>
-                  <p className="text-3xl font-bold text-white mt-2">{activityStats.categoryStats?.length || 0}</p>
-                </div>
-                <div className="bg-orange-500/30 p-3 rounded-lg">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Activity List */}
-            <div className="bg-slate-800 rounded-xl shadow-lg border border-slate-700 overflow-hidden">
-              <div className="p-6 border-b border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <h2 className="text-xl font-bold text-white">Activity Log</h2>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => {
-                      const lastActivity = activities.length > 0 ? activities[0] : null;
-                      const defaultStartTime = lastActivity 
-                        ? (() => {
-                            const d = new Date(lastActivity.endTime);
-                            const year = d.getFullYear();
-                            const month = String(d.getMonth() + 1).padStart(2, '0');
-                            const day = String(d.getDate()).padStart(2, '0');
-                            const hours = String(d.getHours()).padStart(2, '0');
-                            const minutes = String(d.getMinutes()).padStart(2, '0');
-                            return `${year}-${month}-${day}T${hours}:${minutes}`;
-                          })()
-                        : '';
-                      
-                      setActivityFormData({
-                        startTime: defaultStartTime,
-                        endTime: '',
-                        duration: '',
-                        category: 'To-do',
-                        remarks: ''
-                      });
-                      setSelectedActivity(null);
-                      setIsActivityModalOpen(true);
-                    }}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium shadow-lg shadow-indigo-500/20"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    Add Activity
-                  </button>
-                </div>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-slate-900/50 border-b border-slate-700">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Start Time</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">End Time</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Duration (hrs)</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Category</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">Remarks</th>
-                      <th className="px-6 py-4 text-right text-xs font-semibold text-slate-300 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-700">
-                    {activities.length === 0 ? (
-                      <tr>
-                        <td colSpan="7" className="px-6 py-0">
-                          <div className="h-64 w-full flex items-center justify-center text-slate-500">
-                            No activities
-                          </div>
-                        </td>
-                      </tr>
-                    ) : (
-                      activities.map((activity) => (
-                        <tr key={activity._id} className="hover:bg-slate-700/30 transition-colors">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
-                            {new Date(activity.date).toLocaleDateString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
-                            {activity.category === 'To-do' 
-                              ? (activity.expiryTime ? new Date(activity.expiryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-')
-                              : (activity.startTime ? new Date(activity.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-')}
-                            {activity.category === 'To-do' && <span className="text-xs text-slate-500 ml-1">(Expiry)</span>}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
-                            {activity.category === 'To-do' 
-                              ? '-' 
-                              : (activity.endTime 
-                                  ? new Date(activity.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-                                  : (activity.startTime 
-                                      ? <span className="text-teal-400 font-mono font-bold">{formatLiveDuration(activity.startTime)}</span>
-                                      : '-'))}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
-                            {activity.category === 'To-do' 
-                              ? '-' 
-                              : (activity.endTime 
-                                  ? <><span className="font-semibold text-white">{(activity.duration / 60).toFixed(2)}</span> hrs</>
-                                  : (activity.startTime 
-                                      ? <span className="text-teal-400 font-semibold">{( (currentTime - new Date(activity.startTime)) / 3600000).toFixed(2)} hrs</span>
-                                      : '-'))}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              categories.find(c => c.name === activity.category)?.color || 'bg-cyan-900/30 text-cyan-400 border border-cyan-500/30'
-                            }`}>
-                              {activity.category}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-slate-300 max-w-xs truncate">
-                            {activity.remarks || '-'}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex justify-end gap-2">
-                              <button
-                                onClick={() => handleEditActivity(activity)}
-                                className="text-blue-400 hover:text-blue-300 transition-colors"
-                              >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                              </button>
-                              <button
-                                onClick={() => handleDeleteActivity(activity._id)}
-                                className="text-red-400 hover:text-red-300 transition-colors"
-                              >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="px-6 py-4 border-t border-slate-700 flex items-center justify-between">
-                  <button
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Previous
-                  </button>
-                  <span className="text-slate-400">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
-            </div>
-        </div>
-      )}
 
       {/* Activity Modal */}
       {isActivityModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md border border-slate-700 shadow-2xl">
-            <h3 className="text-xl font-bold text-white mb-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md border border-[#D4C9B8] shadow-2xl">
+            <h3 className="text-xl font-bold text-[#1C1A17] mb-4">
               {selectedActivity ? 'Edit Activity' : 'Add New Activity'}
             </h3>
             <form onSubmit={selectedActivity ? handleUpdateActivity : handleCreateActivity} className="space-y-4">
               {activityFormData.category === 'To-do' ? (
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Expiry Date and Time</label>
+                  <label className="block text-sm font-medium text-[#5A5550] mb-1">Expiry Date and Time</label>
                   <input
                     type="datetime-local"
                     required
                     value={activityFormData.expiryTime}
                     onChange={(e) => setActivityFormData({ ...activityFormData, expiryTime: e.target.value })}
-                    className="w-full bg-slate-700 border-slate-600 rounded-lg text-white px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
+                    className="w-full bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] px-4 py-2 focus:ring-[#9B7D43] focus:border-[#9B7D43] focus:outline-none"
                   />
                 </div>
               ) : (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">Start Time</label>
+                    <label className="block text-sm font-medium text-[#5A5550] mb-1">Start Time</label>
                     <input
                       type="datetime-local"
                       required
                       value={activityFormData.startTime}
                       onChange={(e) => setActivityFormData({ ...activityFormData, startTime: e.target.value })}
-                      className="w-full bg-slate-700 border-slate-600 rounded-lg text-white px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
+                      className="w-full bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] px-4 py-2 focus:ring-[#9B7D43] focus:border-[#9B7D43] focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">End Time (Optional)</label>
+                    <label className="block text-sm font-medium text-[#5A5550] mb-1">End Time (Optional)</label>
                     <input
                       type="datetime-local"
                       value={activityFormData.endTime}
                       onChange={(e) => setActivityFormData({ ...activityFormData, endTime: e.target.value })}
-                      className="w-full bg-slate-700 border-slate-600 rounded-lg text-white px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
+                      className="w-full bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] px-4 py-2 focus:ring-[#9B7D43] focus:border-[#9B7D43] focus:outline-none"
                     />
                   </div>
 
                   {activityFormData.startTime && activityFormData.endTime && (
-                    <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
-                      <p className="text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">Calculated Duration</p>
-                      <p className="text-lg font-bold text-teal-400">
+                    <div className="bg-[#FAF7F2] p-3 rounded-lg border border-[#D4C9B8]">
+                      <p className="text-xs text-[#5A5550] uppercase tracking-wider font-bold mb-1">Calculated Duration</p>
+                      <p className="text-lg font-bold text-[#9B7D43]">
                         {(calculateDurationMinutes(activityFormData.startTime, activityFormData.endTime) / 60).toFixed(2)} hrs
                       </p>
                     </div>
@@ -3272,12 +2775,12 @@ const AdminDashboard = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Category</label>
+                <label className="block text-sm font-medium text-[#5A5550] mb-1">Category</label>
                 <select
                   required
                   value={activityFormData.category}
                   onChange={(e) => setActivityFormData({ ...activityFormData, category: e.target.value })}
-                  className="w-full bg-slate-700 border-slate-600 rounded-lg text-white px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] px-4 py-2 focus:ring-[#9B7D43] focus:border-[#9B7D43] focus:outline-none"
                 >
                   <option value="" disabled>Select a category</option>
                   {!categories.find(c => c.name === 'To-do') && (
@@ -3290,12 +2793,12 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Remarks (Optional)</label>
+                <label className="block text-sm font-medium text-[#5A5550] mb-1">Remarks (Optional)</label>
                 <textarea
                   rows="3"
                   value={activityFormData.remarks}
                   onChange={(e) => setActivityFormData({ ...activityFormData, remarks: e.target.value })}
-                  className="w-full bg-slate-700 border-slate-600 rounded-lg text-white px-4 py-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] px-4 py-2 focus:ring-[#9B7D43] focus:border-[#9B7D43] focus:outline-none"
                   placeholder="Add any notes about this activity..."
                 />
               </div>
@@ -3307,13 +2810,13 @@ const AdminDashboard = () => {
                     setIsActivityModalOpen(false);
                     setSelectedActivity(null);
                   }}
-                  className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
+                  className="px-4 py-2 text-[#5A5550] hover:text-[#1C1A17] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all font-medium"
+                  className="px-6 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-all font-medium"
                 >
                   {selectedActivity ? 'Update Activity' : 'Add Activity'}
                 </button>
@@ -3326,12 +2829,12 @@ const AdminDashboard = () => {
       {/* Category Management Modal */}
       {isCategoryModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-          <div className="bg-slate-800 rounded-xl p-6 w-full max-w-md border border-slate-700 shadow-2xl">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md border border-[#D4C9B8] shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-white">Add & Manage Categories</h3>
-              <button 
+              <h3 className="text-xl font-bold text-[#1C1A17]">Add & Manage Categories</h3>
+              <button
                 onClick={() => setIsCategoryModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-[#9A8A7A] hover:text-[#1C1A17]"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
@@ -3341,14 +2844,14 @@ const AdminDashboard = () => {
               {/* List */}
               <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
                 {categories.length === 0 ? (
-                  <p className="text-slate-500 text-center py-4">No categories created yet.</p>
+                  <p className="text-[#9A8A7A] text-center py-4">No categories created yet.</p>
                 ) : (
                   categories.map(cat => (
-                    <div key={cat._id} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg border border-slate-700">
-                      <span className={`px-2 py-1 rounded text-xs ${cat.color || 'bg-slate-600'}`}>{cat.name}</span>
-                      <button 
+                    <div key={cat._id} className="flex items-center justify-between p-3 bg-[#FAF7F2] rounded-lg border border-[#D4C9B8]">
+                      <span className={`px-2 py-1 rounded text-xs ${cat.color || 'bg-[#9B7D43]/10 text-[#9B7D43]'}`}>{cat.name}</span>
+                      <button
                         onClick={() => handleDeleteCategory(cat._id)}
-                        className="text-red-400 hover:text-red-300 p-1"
+                        className="text-red-500 hover:text-red-700 p-1"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                       </button>
@@ -3358,8 +2861,8 @@ const AdminDashboard = () => {
               </div>
 
               {/* Add New */}
-              <div className="border-t border-slate-700 pt-4">
-                <h4 className="text-sm font-semibold text-slate-300 mb-3">Add New Category</h4>
+              <div className="border-t border-[#D4C9B8] pt-4">
+                <h4 className="text-sm font-semibold text-[#5A5550] mb-3">Add New Category</h4>
                 <form onSubmit={handleCreateCategory} className="space-y-3">
                   <div>
                     <input
@@ -3368,27 +2871,27 @@ const AdminDashboard = () => {
                       required
                       value={newCategory.name}
                       onChange={(e) => setNewCategory({...newCategory, name: e.target.value})}
-                      className="w-full bg-slate-700 border-slate-600 rounded-lg text-white px-3 py-2 text-sm focus:ring-teal-500 focus:border-teal-500"
+                      className="w-full bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] px-3 py-2 text-sm focus:ring-[#9B7D43] focus:border-[#9B7D43] focus:outline-none"
                     />
                   </div>
                   <div className="flex gap-2">
                      <select
                        value={newCategory.color}
                        onChange={(e) => setNewCategory({...newCategory, color: e.target.value})}
-                       className="flex-1 bg-slate-700 border-slate-600 rounded-lg text-white px-3 py-2 text-sm"
+                       className="flex-1 bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] px-3 py-2 text-sm focus:outline-none"
                      >
-                       <option value="bg-slate-700 text-slate-300 border-slate-600">Default (Grey)</option>
-                       <option value="bg-blue-900/50 text-blue-300 border-blue-700/50">Blue</option>
-                       <option value="bg-purple-900/50 text-purple-300 border-purple-700/50">Purple</option>
-                       <option value="bg-green-900/50 text-green-300 border-green-700/50">Green</option>
-                       <option value="bg-yellow-900/50 text-yellow-300 border-yellow-700/50">Yellow</option>
-                       <option value="bg-orange-900/50 text-orange-300 border-orange-700/50">Orange</option>
-                       <option value="bg-teal-900/50 text-teal-300 border-teal-700/50">Teal</option>
-                       <option value="bg-red-900/50 text-red-300 border-red-700/50">Red</option>
+                       <option value="bg-[#9B7D43]/10 text-[#9B7D43] border-[#9B7D43]/30">Default (Gold)</option>
+                       <option value="bg-blue-50 text-blue-700 border-blue-200">Blue</option>
+                       <option value="bg-purple-50 text-purple-700 border-purple-200">Purple</option>
+                       <option value="bg-green-50 text-green-700 border-green-200">Green</option>
+                       <option value="bg-yellow-50 text-yellow-700 border-yellow-200">Yellow</option>
+                       <option value="bg-orange-50 text-orange-700 border-orange-200">Orange</option>
+                       <option value="bg-teal-50 text-teal-700 border-teal-200">Teal</option>
+                       <option value="bg-red-50 text-red-700 border-red-200">Red</option>
                      </select>
                      <button
                        type="submit"
-                       className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 text-sm font-medium"
+                       className="px-4 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg text-sm font-medium transition-colors"
                      >
                        Add
                      </button>
@@ -3403,12 +2906,12 @@ const AdminDashboard = () => {
       {/* Mentor View Modal */}
       {isMentorViewModalOpen && selectedMentor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 border-b border-slate-700 flex items-center justify-between sticky top-0">
-              <h2 className="text-2xl font-bold text-white">Mentor Details</h2>
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-b border-[#D4C9B8] flex items-center justify-between sticky top-0">
+              <h2 className="text-2xl font-bold text-[#1C1A17]">Mentor Details</h2>
               <button
                 onClick={closeMentorViewModal}
-                className="text-slate-400 hover:text-slate-300 transition-colors"
+                className="text-[#9A8A7A] hover:text-[#1C1A17] transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -3418,56 +2921,56 @@ const AdminDashboard = () => {
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-400 mb-1">Full Name</label>
-                  <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedMentor.name}</p>
+                  <label className="block text-sm font-semibold text-[#5A5550] mb-1">Full Name</label>
+                  <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedMentor.name}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-400 mb-1">Email</label>
-                  <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedMentor.email}</p>
+                  <label className="block text-sm font-semibold text-[#5A5550] mb-1">Email</label>
+                  <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedMentor.email}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-400 mb-1">Phone</label>
-                  <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedMentor.phone}</p>
+                  <label className="block text-sm font-semibold text-[#5A5550] mb-1">Phone</label>
+                  <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedMentor.phone}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-400 mb-1">Status</label>
-                  <div className="bg-slate-700 px-4 py-2 rounded-lg">
+                  <label className="block text-sm font-semibold text-[#5A5550] mb-1">Status</label>
+                  <div className="bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">
                     {getStatusBadge(selectedMentor.status, 'mentor')}
                   </div>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Expertise</label>
-                <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedMentor.skills || 'Not specified'}</p>
+                <label className="block text-sm font-semibold text-[#5A5550] mb-1">Expertise</label>
+                <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedMentor.skills || 'Not specified'}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Experience</label>
-                <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedMentor.experience || 'Not specified'}</p>
+                <label className="block text-sm font-semibold text-[#5A5550] mb-1">Experience</label>
+                <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedMentor.experience || 'Not specified'}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Previous Experience</label>
-                <p className="text-white bg-slate-700 px-4 py-2 rounded-lg whitespace-pre-wrap">{selectedMentor.previousMentoring || 'No previous experience provided'}</p>
+                <label className="block text-sm font-semibold text-[#5A5550] mb-1">Previous Experience</label>
+                <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg whitespace-pre-wrap">{selectedMentor.previousMentoring || 'No previous experience provided'}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">LinkedIn Profile</label>
-                <a 
+                <label className="block text-sm font-semibold text-[#5A5550] mb-1">LinkedIn Profile</label>
+                <a
                   href={selectedMentor.linkedin?.match(/^https?:\/\//i) ? selectedMentor.linkedin : `https://${selectedMentor.linkedin}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-teal-400 hover:text-teal-300 bg-slate-700 px-4 py-2 rounded-lg block underline"
+                  className="text-[#9B7D43] hover:text-[#7A6235] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg block underline"
                 >
                   {selectedMentor.linkedin}
                 </a>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Submitted Date</label>
-                <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{formatDate(selectedMentor.createdAt)}</p>
+                <label className="block text-sm font-semibold text-[#5A5550] mb-1">Submitted Date</label>
+                <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{formatDate(selectedMentor.createdAt)}</p>
               </div>
             </div>
-            <div className="bg-slate-900 px-6 py-4 border-t border-slate-700 flex justify-end gap-3">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-t border-[#D4C9B8] flex justify-end gap-3">
               <button
                 onClick={closeMentorViewModal}
-                className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold"
+                className="px-6 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-colors font-semibold"
               >
                 Close
               </button>
@@ -3479,12 +2982,12 @@ const AdminDashboard = () => {
       {/* Applicant View Modal */}
       {isViewModalOpen && selectedApplicant && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 border-b border-slate-700 flex items-center justify-between sticky top-0">
-              <h2 className="text-2xl font-bold text-white">Applicant Details</h2>
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-b border-[#D4C9B8] flex items-center justify-between sticky top-0">
+              <h2 className="text-2xl font-bold text-[#1C1A17]">Applicant Details</h2>
               <button
                 onClick={closeViewModal}
-                className="text-slate-400 hover:text-slate-300 transition-colors"
+                className="text-[#9A8A7A] hover:text-[#1C1A17] transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -3494,66 +2997,66 @@ const AdminDashboard = () => {
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-400 mb-1">Full Name</label>
-                  <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedApplicant.fullName}</p>
+                  <label className="block text-sm font-semibold text-[#5A5550] mb-1">Full Name</label>
+                  <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedApplicant.fullName}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-400 mb-1">Email</label>
-                  <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedApplicant.email}</p>
+                  <label className="block text-sm font-semibold text-[#5A5550] mb-1">Email</label>
+                  <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedApplicant.email}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-400 mb-1">Phone</label>
-                  <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedApplicant.phone}</p>
+                  <label className="block text-sm font-semibold text-[#5A5550] mb-1">Phone</label>
+                  <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedApplicant.phone}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-400 mb-1">Place</label>
-                  <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedApplicant.place}</p>
+                  <label className="block text-sm font-semibold text-[#5A5550] mb-1">Place</label>
+                  <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedApplicant.place}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-400 mb-1">Status</label>
-                  <div className="bg-slate-700 px-4 py-2 rounded-lg">
+                  <label className="block text-sm font-semibold text-[#5A5550] mb-1">Status</label>
+                  <div className="bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">
                     {getStatusBadge(selectedApplicant.status, 'applicant')}
                   </div>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Education</label>
-                <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedApplicant.educationalQualifications || 'Not specified'}</p>
+                <label className="block text-sm font-semibold text-[#5A5550] mb-1">Education</label>
+                <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedApplicant.educationalQualifications || 'Not specified'}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Skills</label>
-                <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{selectedApplicant.programmingLanguages || 'Not specified'}</p>
+                <label className="block text-sm font-semibold text-[#5A5550] mb-1">Skills</label>
+                <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{selectedApplicant.programmingLanguages || 'Not specified'}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Difficulties Faced</label>
-                <p className="text-white bg-slate-700 px-4 py-2 rounded-lg whitespace-pre-wrap">{selectedApplicant.difficulties || 'None mentioned'}</p>
+                <label className="block text-sm font-semibold text-[#5A5550] mb-1">Difficulties Faced</label>
+                <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg whitespace-pre-wrap">{selectedApplicant.difficulties || 'None mentioned'}</p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Feedback</label>
-                <p className="text-white bg-slate-700 px-4 py-2 rounded-lg whitespace-pre-wrap">{selectedApplicant.feedback || 'No feedback provided'}</p>
+                <label className="block text-sm font-semibold text-[#5A5550] mb-1">Feedback</label>
+                <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg whitespace-pre-wrap">{selectedApplicant.feedback || 'No feedback provided'}</p>
               </div>
               {selectedApplicant.githubLink && (
                 <div>
-                  <label className="block text-sm font-semibold text-slate-400 mb-1">GitHub Profile</label>
+                  <label className="block text-sm font-semibold text-[#5A5550] mb-1">GitHub Profile</label>
                   <a
                      href={selectedApplicant.githubLink?.match(/^https?:\/\//i) ? selectedApplicant.githubLink : `https://${selectedApplicant.githubLink}`}
                      target="_blank"
                      rel="noopener noreferrer"
-                    className="text-teal-400 hover:text-teal-300 bg-slate-700 px-4 py-2 rounded-lg block underline"
+                    className="text-[#9B7D43] hover:text-[#7A6235] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg block underline"
                   >
                     {selectedApplicant.githubLink}
                   </a>
                 </div>
               )}
               <div>
-                <label className="block text-sm font-semibold text-slate-400 mb-1">Applied Date</label>
-                <p className="text-white bg-slate-700 px-4 py-2 rounded-lg">{formatDate(selectedApplicant.createdAt)}</p>
+                <label className="block text-sm font-semibold text-[#5A5550] mb-1">Applied Date</label>
+                <p className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-4 py-2 rounded-lg">{formatDate(selectedApplicant.createdAt)}</p>
               </div>
             </div>
-            <div className="bg-slate-900 px-6 py-4 border-t border-slate-700 flex justify-end gap-3">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-t border-[#D4C9B8] flex justify-end gap-3">
               <button
                 onClick={closeViewModal}
-                className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold"
+                className="px-6 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-colors font-semibold"
               >
                 Close
               </button>
@@ -3565,16 +3068,16 @@ const AdminDashboard = () => {
       {/* Add Topic Modal */}
       {isTopicModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl shadow-2xl max-w-md w-full">
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 border-b border-slate-700 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-white">Add Topics</h2>
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-b border-[#D4C9B8] flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-[#1C1A17]">Add Topics</h2>
               <button
                 onClick={() => {
                   setIsTopicModalOpen(false);
                   setSelectedModule(null);
                   setNewTopicName('');
                 }}
-                className="text-slate-400 hover:text-slate-300 transition-colors"
+                className="text-[#9A8A7A] hover:text-[#1C1A17] transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -3583,84 +3086,84 @@ const AdminDashboard = () => {
             </div>
             <div className="p-6 space-y-4">
               <div className="flex flex-col gap-4 mb-4">
-                <div className="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg border border-slate-700">
+                <div className="flex items-center gap-3 p-3 bg-[#FAF7F2] rounded-lg border border-[#D4C9B8]">
                   <input
                     type="checkbox"
                     id="isPracticalProblem"
                     checked={topicFormData.isPracticalProblem}
                     onChange={(e) => setTopicFormData({ ...topicFormData, isPracticalProblem: e.target.checked })}
-                    className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-teal-600 focus:ring-teal-500 focus:ring-offset-slate-800"
+                    className="w-5 h-5 rounded border-[#D4C9B8] text-[#9B7D43] focus:ring-[#9B7D43]"
                   />
-                  <label htmlFor="isPracticalProblem" className="text-sm font-medium text-slate-300 cursor-pointer select-none">
+                  <label htmlFor="isPracticalProblem" className="text-sm font-medium text-[#5A5550] cursor-pointer select-none">
                     Topic is a LeetCode problem
                   </label>
                 </div>
 
                 {!topicFormData.isPracticalProblem ? (
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <label className="block text-sm font-medium text-[#5A5550] mb-2">
                       Task Descriptions *
-                      <span className="text-xs text-slate-400 ml-2">(one per line for multiple tasks)</span>
+                      <span className="text-xs text-[#9A8A7A] ml-2">(one per line for multiple tasks)</span>
                     </label>
                     <textarea
                       value={newTopicName}
                       onChange={(e) => setNewTopicName(e.target.value)}
-                      className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white min-h-[120px] resize-y"
+                      className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17] min-h-[120px] resize-y"
                       placeholder="HTML Basic Tags & Structure&#10;HTML Semantic Tags&#10;HTML Forms&#10;..."
                       autoFocus
                     />
-                    <p className="text-xs text-slate-400 mt-2">
+                    <p className="text-xs text-[#9A8A7A] mt-2">
                       Enter one topic per line to add multiple topics at once
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-4 animate-fadeIn">
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">Problem Title *</label>
+                      <label className="block text-sm font-medium text-[#5A5550] mb-2">Problem Title *</label>
                       <input
                         type="text"
                         value={topicFormData.name}
                         onChange={(e) => setTopicFormData({ ...topicFormData, name: e.target.value })}
-                        className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white"
+                        className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17]"
                         placeholder="e.g., Two Sum"
                         autoFocus
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">LeetCode Problem URL *</label>
+                      <label className="block text-sm font-medium text-[#5A5550] mb-2">LeetCode Problem URL *</label>
                       <input
                         type="url"
                         value={topicFormData.problemUrl}
                         onChange={(e) => setTopicFormData({ ...topicFormData, problemUrl: e.target.value })}
-                        className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white"
+                        className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17]"
                         placeholder="https://leetcode.com/problems/..."
                       />
                     </div>
                   </div>
                 )}
               </div>
-              <div className="border-t border-slate-700 pt-4 mt-2">
+              <div className="border-t border-[#D4C9B8] pt-4 mt-2">
                 <TopicQuizForm
                    quizzes={topicFormData.quizzes || []}
                    onChange={(newQuizzes) => setTopicFormData({ ...topicFormData, quizzes: newQuizzes })}
                  />
               </div>
             </div>
-            <div className="bg-slate-900 px-6 py-4 border-t border-slate-700 flex justify-end gap-3">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-t border-[#D4C9B8] flex justify-end gap-3">
               <button
                 onClick={() => {
                   setIsTopicModalOpen(false);
                   setSelectedModule(null);
                   setNewTopicName('');
                 }}
-                className="px-6 py-2 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors font-semibold"
+                className="px-6 py-2 border border-[#D4C9B8] rounded-lg text-[#5A5550] hover:bg-[#F5F0E8] transition-colors font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddTopic}
                 disabled={topicFormData.isPracticalProblem ? (!topicFormData.name.trim() || !topicFormData.problemUrl.trim()) : !newTopicName.trim()}
-                className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {topicFormData.isPracticalProblem ? 'Add Problem' : 'Add Topics'}
               </button>
@@ -3672,15 +3175,15 @@ const AdminDashboard = () => {
       {/* Add Module Modal */}
       {isModuleModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 border-b border-slate-700 flex items-center justify-between sticky top-0">
-              <h2 className="text-2xl font-bold text-white">Add New Module</h2>
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-b border-[#D4C9B8] flex items-center justify-between sticky top-0">
+              <h2 className="text-2xl font-bold text-[#1C1A17]">Add New Module</h2>
               <button
                 onClick={() => {
                   setIsModuleModalOpen(false);
                   setModuleFormData({ title: '', topics: [] });
                 }}
-                className="text-slate-400 hover:text-slate-300 transition-colors"
+                className="text-[#9A8A7A] hover:text-[#1C1A17] transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -3689,18 +3192,18 @@ const AdminDashboard = () => {
             </div>
             <div className="p-6 space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Module Title *</label>
+                <label className="block text-sm font-medium text-[#5A5550] mb-2">Module Title *</label>
                 <input
                   type="text"
                   value={moduleFormData.title}
                   onChange={(e) => setModuleFormData({ ...moduleFormData, title: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white"
+                  className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17]"
                   placeholder="e.g., Module 1: HTML & CSS Fundamentals"
                   autoFocus
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Topics</label>
+                <label className="block text-sm font-medium text-[#5A5550] mb-2">Topics</label>
                 <div className="flex gap-2 mb-4">
                   <input
                     type="text"
@@ -3712,21 +3215,21 @@ const AdminDashboard = () => {
                         addTopicToForm();
                       }
                     }}
-                    className="flex-1 px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white"
+                    className="flex-1 px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17]"
                     placeholder="Enter task description"
                   />
                   <button
                     onClick={addTopicToForm}
                     disabled={!newTopicName.trim()}
-                    className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Add
                   </button>
                 </div>
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {moduleFormData.topics.map((topic, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-slate-900 rounded-lg border border-slate-700">
-                      <span className="w-6 h-6 flex items-center justify-center bg-slate-800 rounded-full text-xs text-slate-400 border border-slate-600">
+                    <div key={index} className="flex items-center gap-3 p-3 bg-[#FAF7F2] rounded-lg border border-[#D4C9B8]">
+                      <span className="w-6 h-6 flex items-center justify-center bg-white rounded-full text-xs text-[#5A5550] border border-[#D4C9B8]">
                         {index + 1}
                       </span>
                       {editingTopicIndex === index ? (
@@ -3735,7 +3238,7 @@ const AdminDashboard = () => {
                             type="text"
                             value={editingTopicName}
                             onChange={(e) => setEditingTopicName(e.target.value)}
-                            className="flex-1 px-2 py-1 text-sm bg-slate-800 border border-slate-600 rounded focus:outline-none focus:border-teal-500 text-white"
+                            className="flex-1 px-2 py-1 text-sm bg-white border border-[#D4C9B8] rounded focus:outline-none focus:border-[#9B7D43] text-[#1C1A17]"
                             autoFocus
                           />
                           <button
@@ -3757,7 +3260,7 @@ const AdminDashboard = () => {
                         </div>
                       ) : (
                         <>
-                          <span className="flex-1 text-slate-300">{topic}</span>
+                          <span className="flex-1 text-[#1C1A17]">{topic}</span>
                           <div className="flex gap-2">
                             <button
                               onClick={() => startEditingTopic(index, topic)}
@@ -3781,27 +3284,27 @@ const AdminDashboard = () => {
                     </div>
                   ))}
                   {moduleFormData.topics.length === 0 && (
-                    <div className="text-center py-4 text-slate-500 text-sm italic">
+                    <div className="text-center py-4 text-[#9A8A7A] text-sm italic">
                       No topics added yet
                     </div>
                   )}
                 </div>
               </div>
             </div>
-            <div className="bg-slate-900 px-6 py-4 border-t border-slate-700 flex justify-end gap-3">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-t border-[#D4C9B8] flex justify-end gap-3">
               <button
                 onClick={() => {
                   setIsModuleModalOpen(false);
                   setModuleFormData({ title: '', topics: [] });
                 }}
-                className="px-6 py-2 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors font-semibold"
+                className="px-6 py-2 border border-[#D4C9B8] rounded-lg text-[#5A5550] hover:bg-[#F5F0E8] transition-colors font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateModule}
                 disabled={!moduleFormData.title.trim() || moduleFormData.topics.length === 0}
-                className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create Module
               </button>
@@ -3813,16 +3316,16 @@ const AdminDashboard = () => {
       {/* Edit Module Modal */}
       {isEditModuleModalOpen && selectedModule && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl shadow-2xl max-w-md w-full">
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 border-b border-slate-700 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-white">Edit Module</h2>
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-b border-[#D4C9B8] flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-[#1C1A17]">Edit Module</h2>
               <button
                 onClick={() => {
                   setIsEditModuleModalOpen(false);
                   setSelectedModule(null);
                   setModuleFormData({ title: '', topics: [] });
                 }}
-                className="text-slate-400 hover:text-slate-300 transition-colors"
+                className="text-[#9A8A7A] hover:text-[#1C1A17] transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -3831,32 +3334,32 @@ const AdminDashboard = () => {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Module Title *</label>
+                <label className="block text-sm font-medium text-[#5A5550] mb-2">Module Title *</label>
                 <input
                   type="text"
                   value={moduleFormData.title}
                   onChange={(e) => setModuleFormData({ ...moduleFormData, title: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white"
+                  className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17]"
                   placeholder="e.g., Module 1: HTML & CSS Fundamentals"
                   autoFocus
                 />
               </div>
             </div>
-            <div className="bg-slate-900 px-6 py-4 border-t border-slate-700 flex justify-end gap-3">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-t border-[#D4C9B8] flex justify-end gap-3">
               <button
                 onClick={() => {
                   setIsEditModuleModalOpen(false);
                   setSelectedModule(null);
                   setModuleFormData({ title: '', topics: [] });
                 }}
-                className="px-6 py-2 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors font-semibold"
+                className="px-6 py-2 border border-[#D4C9B8] rounded-lg text-[#5A5550] hover:bg-[#F5F0E8] transition-colors font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateModule}
                 disabled={!moduleFormData.title.trim()}
-                className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Update Module
               </button>
@@ -3868,9 +3371,9 @@ const AdminDashboard = () => {
       {/* Edit Topic Modal */}
       {isEditTopicModalOpen && selectedModule && selectedTopic && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl shadow-2xl max-w-md w-full">
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 border-b border-slate-700 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-white">Edit Topic</h2>
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-b border-[#D4C9B8] flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-[#1C1A17]">Edit Topic</h2>
               <button
                 onClick={() => {
                   setIsEditTopicModalOpen(false);
@@ -3878,7 +3381,7 @@ const AdminDashboard = () => {
                   setSelectedTopic(null);
                   setTopicFormData({ name: '', isPracticalProblem: false, quizzes: [] });
                 }}
-                className="text-slate-400 hover:text-slate-300 transition-colors"
+                className="text-[#9A8A7A] hover:text-[#1C1A17] transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -3887,12 +3390,12 @@ const AdminDashboard = () => {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Task Description *</label>
+                <label className="block text-sm font-medium text-[#5A5550] mb-2">Task Description *</label>
                 <input
                   type="text"
                   value={topicFormData.name}
                   onChange={(e) => setTopicFormData({ ...topicFormData, name: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white"
+                  className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17]"
                   placeholder="e.g., Learn basic HTML tags and document structure"
                 />
               </div>
@@ -3903,33 +3406,33 @@ const AdminDashboard = () => {
                     id="isEditPracticalProblem"
                     checked={topicFormData.isPracticalProblem}
                     onChange={(e) => setTopicFormData({ ...topicFormData, isPracticalProblem: e.target.checked })}
-                    className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-teal-600 focus:ring-teal-500 focus:ring-offset-slate-800"
+                    className="w-5 h-5 rounded border-[#D4C9B8] text-[#9B7D43] focus:ring-[#9B7D43]"
                   />
-                  <label htmlFor="isEditPracticalProblem" className="text-sm font-medium text-slate-300 cursor-pointer">
+                  <label htmlFor="isEditPracticalProblem" className="text-sm font-medium text-[#5A5550] cursor-pointer">
                     Topic is a LeetCode problem
                   </label>
                 </div>
                 {topicFormData.isPracticalProblem && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">LeetCode Problem URL</label>
+                    <label className="block text-sm font-medium text-[#5A5550] mb-2">LeetCode Problem URL</label>
                     <input
                       type="url"
                       value={topicFormData.problemUrl}
                       onChange={(e) => setTopicFormData({ ...topicFormData, problemUrl: e.target.value })}
-                      className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white"
+                      className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17]"
                       placeholder="https://leetcode.com/problems/..."
                     />
                   </div>
                 )}
               </div>
-              <div className="border-t border-slate-700 pt-4 mt-2">
+              <div className="border-t border-[#D4C9B8] pt-4 mt-2">
                 <TopicQuizForm
                    quizzes={topicFormData.quizzes || []}
                    onChange={(newQuizzes) => setTopicFormData({ ...topicFormData, quizzes: newQuizzes })}
                  />
               </div>
             </div>
-            <div className="bg-slate-900 px-6 py-4 border-t border-slate-700 flex justify-end gap-3">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-t border-[#D4C9B8] flex justify-end gap-3">
               <button
                 onClick={() => {
                   setIsEditTopicModalOpen(false);
@@ -3937,14 +3440,14 @@ const AdminDashboard = () => {
                   setSelectedTopic(null);
                   setTopicFormData({ name: '', isPracticalProblem: false, quizzes: [] });
                 }}
-                className="px-6 py-2 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors font-semibold"
+                className="px-6 py-2 border border-[#D4C9B8] rounded-lg text-[#5A5550] hover:bg-[#F5F0E8] transition-colors font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateTopic}
                 disabled={!topicFormData.name.trim()}
-                className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Update Topic
               </button>
@@ -3955,12 +3458,12 @@ const AdminDashboard = () => {
       {/* Review Modal */}
       {isReviewModalOpen && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl shadow-2xl max-w-md w-full">
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 border-b border-slate-700 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-white">Add Review for {selectedUser.name}</h2>
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-b border-[#D4C9B8] flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-[#1C1A17]">Add Review for {selectedUser.name}</h2>
               <button
                 onClick={() => setIsReviewModalOpen(false)}
-                className="text-slate-400 hover:text-slate-300 transition-colors"
+                className="text-[#9A8A7A] hover:text-[#1C1A17] transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -3971,11 +3474,11 @@ const AdminDashboard = () => {
 
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Status *</label>
+                <label className="block text-sm font-medium text-[#5A5550] mb-2">Status *</label>
                 <select
                   value={reviewFormData.status}
                   onChange={(e) => setReviewFormData({ ...reviewFormData, status: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white"
+                  className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17]"
                 >
                   <option value="excellent">Excellent Performance (Green)</option>
                   <option value="good">Good Progress (Blue)</option>
@@ -3985,39 +3488,39 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Recording Link</label>
+                <label className="block text-sm font-medium text-[#5A5550] mb-2">Recording Link</label>
                 <input
                   type="url"
                   value={reviewFormData.recordingLink || ''}
                   onChange={(e) => setReviewFormData({ ...reviewFormData, recordingLink: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white"
+                  className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17]"
                   placeholder="https://..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[#5A5550] mb-2">
                   Feedback Points *
-                  <span className="text-xs text-slate-400 ml-2">(One point per line)</span>
+                  <span className="text-xs text-[#9A8A7A] ml-2">(One point per line)</span>
                 </label>
                 <textarea
                   value={reviewFormData.feedback}
                   onChange={(e) => setReviewFormData({ ...reviewFormData, feedback: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-teal-500 bg-slate-700 text-white min-h-[120px] resize-y"
+                  className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-[#9B7D43] bg-white text-[#1C1A17] min-h-[120px] resize-y"
                   placeholder="Consistently high quality code&#10;Tasks completed on time"
                 />
               </div>
             </div>
-            <div className="bg-slate-900 px-6 py-4 border-t border-slate-700 flex justify-end gap-3">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-t border-[#D4C9B8] flex justify-end gap-3">
               <button
                 onClick={() => setIsReviewModalOpen(false)}
-                className="px-6 py-2 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors font-semibold"
+                className="px-6 py-2 border border-[#D4C9B8] rounded-lg text-[#5A5550] hover:bg-[#F5F0E8] transition-colors font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveReview}
-                className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold"
+                className="px-6 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-colors font-semibold"
               >
                 Save Review
               </button>
@@ -4028,12 +3531,12 @@ const AdminDashboard = () => {
       {/* Unlock Modules Modal */}
       {isUnlockModalOpen && selectedUserForUnlock && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl shadow-2xl max-w-md w-full">
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 border-b border-slate-700 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white">Unlock Modules for {selectedUserForUnlock.name}</h2>
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-b border-[#D4C9B8] flex items-center justify-between">
+              <h2 className="text-xl font-bold text-[#1C1A17]">Unlock Modules for {selectedUserForUnlock.name}</h2>
                <button
                  onClick={() => setIsUnlockModalOpen(false)}
-                 className="text-slate-400 hover:text-slate-300 transition-colors"
+                 className="text-[#9A8A7A] hover:text-[#1C1A17] transition-colors"
                >
                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -4041,15 +3544,15 @@ const AdminDashboard = () => {
                </button>
             </div>
             <div className="p-6 space-y-4">
-              <p className="text-slate-400 text-sm">
+              <p className="text-[#5A5550] text-sm">
                 Select the module up to which you want to unlock for this user.
               </p>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Unlock Up To Module</label>
+                <label className="block text-sm font-medium text-[#5A5550] mb-2">Unlock Up To Module</label>
                 <select
                   value={unlockTargetModule}
                   onChange={(e) => setUnlockTargetModule(e.target.value)}
-                  className="w-full px-4 py-2 border-2 border-slate-700 rounded-lg focus:ring-0 focus:outline-none focus:border-yellow-500 bg-slate-700 text-white"
+                  className="w-full px-4 py-2 border-2 border-[#D4C9B8] rounded-lg focus:ring-0 focus:outline-none focus:border-yellow-500 bg-white text-[#1C1A17]"
                 >
                   <option value="">Select a module...</option>
                    {programModules.map((module) => (
@@ -4060,10 +3563,10 @@ const AdminDashboard = () => {
                 </select>
               </div>
             </div>
-            <div className="bg-slate-900 px-6 py-4 border-t border-slate-700 flex justify-end gap-3">
+            <div className="bg-[#FAF7F2] px-6 py-4 border-t border-[#D4C9B8] flex justify-end gap-3">
                <button
                 onClick={() => setIsUnlockModalOpen(false)}
-                className="px-6 py-2 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors font-semibold"
+                className="px-6 py-2 border border-[#D4C9B8] rounded-lg text-[#5A5550] hover:bg-[#F5F0E8] transition-colors font-semibold"
               >
                 Cancel
               </button>
@@ -4084,14 +3587,14 @@ const AdminDashboard = () => {
       {/* Client Management Modal */}
       {isClientModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className={`bg-slate-800 rounded-xl shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col ${selectedClient ? 'max-w-4xl' : 'max-w-lg'}`}>
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 border-b border-slate-700 flex items-center justify-between flex-shrink-0">
-              <h2 className="text-2xl font-bold text-white">
+          <div className={`bg-white rounded-xl shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col ${selectedClient ? 'max-w-4xl' : 'max-w-lg'}`}>
+            <div className="bg-[#FAF7F2] px-6 py-4 border-b border-[#D4C9B8] flex items-center justify-between flex-shrink-0">
+              <h2 className="text-2xl font-bold text-[#1C1A17]">
                 {selectedClient ? `Manage Client: ${clientFormData.companyName}` : 'Add New Client'}
               </h2>
               <button
                 onClick={() => setIsClientModalOpen(false)}
-                className="text-slate-400 hover:text-slate-300 transition-colors"
+                className="text-[#9A8A7A] hover:text-[#1C1A17] transition-colors"
                 type="button"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -4100,24 +3603,24 @@ const AdminDashboard = () => {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto min-h-0 bg-slate-800">
+            <div className="flex-1 overflow-y-auto min-h-0 bg-white">
              {selectedClient && (
-                <div className="px-6 pt-4 border-b border-slate-700 flex gap-4 bg-slate-800 sticky top-0 z-10">
+                <div className="px-6 pt-4 border-b border-[#D4C9B8] flex gap-4 bg-white sticky top-0 z-10">
                     <button
                         onClick={() => setSelectedClientDetailTab('invoices')}
-                        className={`pb-2 text-sm font-medium transition-colors border-b-2 ${selectedClientDetailTab === 'invoices' ? 'border-blue-500 text-blue-400' : 'border-transparent text-slate-400 hover:text-white'}`}
+                        className={`pb-2 text-sm font-medium transition-colors border-b-2 ${selectedClientDetailTab === 'invoices' ? 'border-[#9B7D43] text-[#9B7D43]' : 'border-transparent text-[#5A5550] hover:text-[#1C1A17]'}`}
                     >
                         Invoices
                     </button>
                     <button
                         onClick={() => setSelectedClientDetailTab('payments')}
-                         className={`pb-2 text-sm font-medium transition-colors border-b-2 ${selectedClientDetailTab === 'payments' ? 'border-green-500 text-green-400' : 'border-transparent text-slate-400 hover:text-white'}`}
+                         className={`pb-2 text-sm font-medium transition-colors border-b-2 ${selectedClientDetailTab === 'payments' ? 'border-[#9B7D43] text-[#9B7D43]' : 'border-transparent text-[#5A5550] hover:text-[#1C1A17]'}`}
                     >
                         Payments
                     </button>
                     <button
                         onClick={() => setSelectedClientDetailTab('profile')}
-                        className={`pb-2 text-sm font-medium transition-colors border-b-2 ${selectedClientDetailTab === 'profile' ? 'border-orange-500 text-orange-400' : 'border-transparent text-slate-400 hover:text-white'}`}
+                        className={`pb-2 text-sm font-medium transition-colors border-b-2 ${selectedClientDetailTab === 'profile' ? 'border-[#9B7D43] text-[#9B7D43]' : 'border-transparent text-[#5A5550] hover:text-[#1C1A17]'}`}
                     >
                         Edit Profile
                     </button>
@@ -4128,33 +3631,33 @@ const AdminDashboard = () => {
                 {(!selectedClient || selectedClientDetailTab === 'profile') && (
                     <form onSubmit={selectedClient ? handleUpdateClient : handleCreateClient} className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Company Name *</label>
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Company Name *</label>
                         <input
                           type="text"
                           required
                           value={clientFormData.companyName}
                           onChange={(e) => setClientFormData({ ...clientFormData, companyName: e.target.value })}
-                          className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-4 py-2 bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] focus:outline-none focus:ring-2 focus:ring-[#9B7D43]"
                           placeholder="Enter company name"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Email Address *</label>
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Email Address *</label>
                         <input
                           type="email"
                           required
                           value={clientFormData.email}
                           onChange={(e) => setClientFormData({ ...clientFormData, email: e.target.value })}
-                          className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-4 py-2 bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] focus:outline-none focus:ring-2 focus:ring-[#9B7D43]"
                           placeholder="client@company.com"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Project Status</label>
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Project Status</label>
                         <select
                           value={clientFormData.status}
                           onChange={(e) => setClientFormData({ ...clientFormData, status: e.target.value })}
-                          className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-4 py-2 bg-white border border-[#D4C9B8] rounded-lg text-[#1C1A17] focus:outline-none focus:ring-2 focus:ring-[#9B7D43]"
                         >
                           <option value="Pending">Pending</option>
                           <option value="In Progress">In Progress</option>
@@ -4166,13 +3669,13 @@ const AdminDashboard = () => {
                         <button
                           type="button"
                           onClick={() => setIsClientModalOpen(false)}
-                          className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
+                          className="px-4 py-2 text-[#5A5550] hover:text-[#1C1A17] transition-colors"
                         >
                           Cancel
                         </button>
                         <button
                           type="submit"
-                          className="px-6 py-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all font-medium"
+                          className="px-6 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg transition-all font-medium"
                         >
                           {selectedClient ? 'Update Profile' : 'Create Client'}
                         </button>
@@ -4183,60 +3686,60 @@ const AdminDashboard = () => {
                 {selectedClient && selectedClientDetailTab === 'invoices' && (
                     <div className="space-y-4">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-white">Project Invoices</h3>
-                            <button 
-                                onClick={() => setIsAddInvoiceModalOpen(true)} 
-                                className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center gap-1"
+                            <h3 className="text-lg font-medium text-[#1C1A17]">Project Invoices</h3>
+                            <button
+                                onClick={() => setIsAddInvoiceModalOpen(true)}
+                                className="px-3 py-1.5 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg text-sm font-medium flex items-center gap-1"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/></svg>
                                 Add Invoice
                             </button>
                         </div>
                          {(selectedClient.invoices || []).length === 0 ? (
-                            <div className="text-center py-8 text-slate-500 border-2 border-dashed border-slate-700 rounded-lg">
+                            <div className="text-center py-8 text-[#9A8A7A] border-2 border-dashed border-[#D4C9B8] rounded-lg">
                                 No invoices found. Add an invoice to track receivables.
                             </div>
                          ) : (
-                             <div className="overflow-x-auto rounded-lg border border-slate-700">
+                             <div className="overflow-x-auto rounded-lg border border-[#D4C9B8]">
                                  <table className="w-full text-left">
-                                     <thead className="text-xs text-slate-400 uppercase bg-slate-900/50">
+                                     <thead className="text-xs text-[#5A5550] uppercase bg-[#FAF7F2]">
                                          <tr>
                                              <th className="px-4 py-3 font-medium">Number</th>
                                              <th className="px-4 py-3 font-medium">Date</th>
-                                             <th className="px-4 py-3 font-medium">Description</th> 
+                                             <th className="px-4 py-3 font-medium">Description</th>
                                              <th className="px-4 py-3 font-medium">Amount</th>
                                              <th className="px-4 py-3 font-medium">Paid</th>
                                              <th className="px-4 py-3 font-medium">Status</th>
                                              <th className="px-4 py-3 font-medium text-right">Actions</th>
                                          </tr>
                                      </thead>
-                                     <tbody className="divide-y divide-slate-700">
+                                     <tbody className="divide-y divide-[#E8E0D4]">
                                          {selectedClient.invoices.map((inv, idx) => (
-                                             <tr key={idx} className="hover:bg-slate-700/30">
-                                                 <td className="px-4 py-3 text-white font-medium">{inv.number}</td>
-                                                 <td className="px-4 py-3 text-slate-300 text-sm">{new Date(inv.date).toLocaleDateString()}</td>
-                                                 <td className="px-4 py-3 font-medium text-white">₹{inv.amount.toLocaleString()}</td>
-                                                 <td className="px-4 py-3 text-green-400">₹{inv.paidAmount?.toLocaleString() || 0}</td>
+                                             <tr key={idx} className="hover:bg-[#FAF7F2]">
+                                                 <td className="px-4 py-3 text-[#1C1A17] font-medium">{inv.number}</td>
+                                                 <td className="px-4 py-3 text-[#5A5550] text-sm">{new Date(inv.date).toLocaleDateString()}</td>
+                                                 <td className="px-4 py-3 font-medium text-[#1C1A17]">₹{inv.amount.toLocaleString()}</td>
+                                                 <td className="px-4 py-3 text-green-700">₹{inv.paidAmount?.toLocaleString() || 0}</td>
                                                  <td className="px-4 py-3">
                                                      <span className={`text-xs px-2 py-0.5 rounded border ${
-                                                         inv.status === 'Paid' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                                         inv.status === 'Partial' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                                                         'bg-red-500/10 text-red-400 border-red-500/20'
+                                                         inv.status === 'Paid' ? 'bg-green-50 text-green-700 border-green-200' :
+                                                         inv.status === 'Partial' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                                         'bg-red-50 text-red-700 border-red-200'
                                                      }`}>
                                                          {inv.status}
                                                      </span>
                                                  </td>
                                                  <td className="px-4 py-3 text-right">
                                                      <div className="flex justify-end gap-2">
-                                                         <button 
+                                                         <button
                                                              onClick={() => handleEditInvoice(inv, selectedClient._id)}
-                                                             className="p-1 text-blue-400 hover:text-blue-300 transition-colors" title="Edit"
+                                                             className="p-1 text-blue-600 hover:text-blue-800 transition-colors" title="Edit"
                                                          >
                                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                                          </button>
-                                                         <button 
+                                                         <button
                                                              onClick={() => handleDeleteInvoice(inv._id, selectedClient._id)}
-                                                             className="p-1 text-red-400 hover:text-red-300 transition-colors" title="Delete"
+                                                             className="p-1 text-red-500 hover:text-red-700 transition-colors" title="Delete"
                                                          >
                                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                          </button>
@@ -4248,9 +3751,9 @@ const AdminDashboard = () => {
                                  </table>
                              </div>
                          )}
-                         <div className="mt-4 pt-4 border-t border-slate-700 flex justify-end gap-4 text-sm">
-                             <div className="text-slate-400">Total Billed: <span className="text-white font-medium">₹{(selectedClient.totalAmount || 0).toLocaleString()}</span></div>
-                             <div className="text-slate-400">Pending: <span className="text-orange-400 font-medium">₹{(selectedClient.totalAmount - selectedClient.receivedAmount || 0).toLocaleString()}</span></div>
+                         <div className="mt-4 pt-4 border-t border-[#D4C9B8] flex justify-end gap-4 text-sm">
+                             <div className="text-[#5A5550]">Total Billed: <span className="text-[#1C1A17] font-medium">₹{(selectedClient.totalAmount || 0).toLocaleString()}</span></div>
+                             <div className="text-[#5A5550]">Pending: <span className="text-orange-600 font-medium">₹{(selectedClient.totalAmount - selectedClient.receivedAmount || 0).toLocaleString()}</span></div>
                          </div>
                     </div>
                 )}
@@ -4258,9 +3761,9 @@ const AdminDashboard = () => {
                 {selectedClient && selectedClientDetailTab === 'payments' && (
                      <div className="space-y-4">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-white">Payments Received</h3>
-                            <button 
-                                onClick={() => setIsAddPaymentModalOpen(true)} 
+                            <h3 className="text-lg font-medium text-[#1C1A17]">Payments Received</h3>
+                            <button
+                                onClick={() => setIsAddPaymentModalOpen(true)}
                                 className="px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium flex items-center gap-1"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/></svg>
@@ -4268,20 +3771,20 @@ const AdminDashboard = () => {
                             </button>
                         </div>
                          {(selectedClient.payments || []).length === 0 ? (
-                            <div className="text-center py-8 text-slate-500 border-2 border-dashed border-slate-700 rounded-lg">
+                            <div className="text-center py-8 text-[#9A8A7A] border-2 border-dashed border-[#D4C9B8] rounded-lg">
                                 No payments recorded yet.
                             </div>
                          ) : (
                              <div className="space-y-3">
                                  {selectedClient.payments.map((pmt, idx) => (
-                                     <div key={idx} className="bg-slate-900/50 p-4 rounded-lg border border-slate-700 hover:border-slate-600 transition-colors">
+                                     <div key={idx} className="bg-[#FAF7F2] p-4 rounded-lg border border-[#D4C9B8] hover:border-[#9B7D43]/30 transition-colors">
                                          <div className="flex justify-between items-start mb-2">
                                              <div className="flex flex-col">
-                                                 <span className="text-green-400 font-bold text-lg">₹{pmt.amount.toLocaleString()}</span>
-                                                 <span className="text-slate-400 text-sm">{new Date(pmt.date).toLocaleDateString()}</span>
+                                                 <span className="text-green-700 font-bold text-lg">₹{pmt.amount.toLocaleString()}</span>
+                                                 <span className="text-[#5A5550] text-sm">{new Date(pmt.date).toLocaleDateString()}</span>
                                              </div>
                                              <div className="flex items-start gap-4">
-                                                 {pmt.remarks && <span className="text-slate-500 text-sm italic mt-1">{pmt.remarks}</span>}
+                                                 {pmt.remarks && <span className="text-[#9A8A7A] text-sm italic mt-1">{pmt.remarks}</span>}
                                                  <div className="flex gap-1">
                                                      <button 
                                                          onClick={() => handleEditPayment(pmt, selectedClient)}
@@ -4301,13 +3804,13 @@ const AdminDashboard = () => {
                                              </div>
                                          </div>
                                          {pmt.allocations && pmt.allocations.length > 0 && (
-                                            <div className="mt-2 text-xs bg-slate-800 p-2 rounded border border-slate-700/50">
-                                                <span className="text-slate-400 block mb-1">Allocated against:</span>
+                                            <div className="mt-2 text-xs bg-white p-2 rounded border border-[#D4C9B8]">
+                                                <span className="text-[#5A5550] block mb-1">Allocated against:</span>
                                                 <div className="flex flex-wrap gap-2">
                                                     {pmt.allocations.map((alloc, aidx) => {
                                                         const inv = selectedClient.invoices.find(i => i._id === alloc.invoiceId);
                                                         return (
-                                                            <span key={aidx} className="text-slate-300 bg-slate-700/50 px-1.5 py-0.5 rounded">
+                                                            <span key={aidx} className="text-[#1C1A17] bg-[#FAF7F2] border border-[#D4C9B8] px-1.5 py-0.5 rounded">
                                                                 {inv ? `#${inv.number}` : 'Unknown Invoice'} (₹{alloc.amount.toLocaleString()})
                                                             </span>
                                                         );
@@ -4319,8 +3822,8 @@ const AdminDashboard = () => {
                                  ))}
                              </div>
                          )}
-                         <div className="mt-4 pt-4 border-t border-slate-700 flex justify-end text-sm">
-                             <div className="text-slate-400">Total Collected: <span className="text-green-400 font-medium">₹{(selectedClient.receivedAmount || 0).toLocaleString()}</span></div>
+                         <div className="mt-4 pt-4 border-t border-[#D4C9B8] flex justify-end text-sm">
+                             <div className="text-[#5A5550]">Total Collected: <span className="text-green-700 font-medium">₹{(selectedClient.receivedAmount || 0).toLocaleString()}</span></div>
                          </div>
                     </div>
                 )}
@@ -4333,18 +3836,18 @@ const AdminDashboard = () => {
       {/* Add Invoice Modal */}
       {isAddInvoiceModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
-             <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-sm border border-slate-700">
-                <div className="p-4 border-b border-slate-700"><h3 className="text-lg font-bold text-white">{editingInvoiceId ? 'Edit Invoice' : 'Add Invoice'}</h3></div>
+             <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm border border-[#D4C9B8]">
+                <div className="p-4 border-b border-[#D4C9B8] bg-[#FAF7F2]"><h3 className="text-lg font-bold text-[#1C1A17]">{editingInvoiceId ? 'Edit Invoice' : 'Add Invoice'}</h3></div>
                 <form onSubmit={handleAddInvoice} className="p-4 space-y-4">
                     {!selectedClient && (
                         <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-1">Select Client</label>
+                            <label className="block text-sm font-medium text-[#5A5550] mb-1">Select Client</label>
                             <select
                                 required
                                 disabled={Boolean(editingInvoiceId)}
                                 value={invoiceFormData.clientId}
                                 onChange={e => setInvoiceFormData({...invoiceFormData, clientId: e.target.value})}
-                                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white disabled:opacity-50"
+                                className="w-full px-3 py-2 bg-white border border-[#D4C9B8] rounded text-[#1C1A17] disabled:opacity-50 focus:outline-none focus:border-[#9B7D43]"
                             >
                                 <option value="">Select a client...</option>
                                 {clients.map(c => (
@@ -4354,23 +3857,23 @@ const AdminDashboard = () => {
                         </div>
                     )}
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Invoice Number</label>
-                        <input type="text" required value={invoiceFormData.number} onChange={e => setInvoiceFormData({...invoiceFormData, number: e.target.value})} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white" placeholder="INV-001" />
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Invoice Number</label>
+                        <input type="text" required value={invoiceFormData.number} onChange={e => setInvoiceFormData({...invoiceFormData, number: e.target.value})} className="w-full px-3 py-2 bg-white border border-[#D4C9B8] rounded text-[#1C1A17] focus:outline-none focus:border-[#9B7D43]" placeholder="INV-001" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Date</label>
-                        <input type="date" required value={invoiceFormData.date} onChange={e => setInvoiceFormData({...invoiceFormData, date: e.target.value})} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white" />
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Date</label>
+                        <input type="date" required value={invoiceFormData.date} onChange={e => setInvoiceFormData({...invoiceFormData, date: e.target.value})} className="w-full px-3 py-2 bg-white border border-[#D4C9B8] rounded text-[#1C1A17] focus:outline-none focus:border-[#9B7D43]" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Amount (₹)</label>
-                        <input type="number" min="0" required value={invoiceFormData.amount} onChange={e => setInvoiceFormData({...invoiceFormData, amount: Number(e.target.value)})} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white" />
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Amount (₹)</label>
+                        <input type="number" min="0" required value={invoiceFormData.amount} onChange={e => setInvoiceFormData({...invoiceFormData, amount: Number(e.target.value)})} className="w-full px-3 py-2 bg-white border border-[#D4C9B8] rounded text-[#1C1A17] focus:outline-none focus:border-[#9B7D43]" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Description / Comment</label>
-                        <textarea 
-                            value={invoiceFormData.description || ''} 
-                            onChange={e => setInvoiceFormData({...invoiceFormData, description: e.target.value})} 
-                            className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white resize-y min-h-[60px]" 
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Description / Comment</label>
+                        <textarea
+                            value={invoiceFormData.description || ''}
+                            onChange={e => setInvoiceFormData({...invoiceFormData, description: e.target.value})}
+                            className="w-full px-3 py-2 bg-white border border-[#D4C9B8] rounded text-[#1C1A17] resize-y min-h-[60px] focus:outline-none focus:border-[#9B7D43]"
                             placeholder="Optional details..."
                         />
                     </div>
@@ -4378,8 +3881,8 @@ const AdminDashboard = () => {
                         <button type="button" onClick={() => {
                             setIsAddInvoiceModalOpen(false);
                             setEditingInvoiceId(null);
-                        }} className="px-3 py-1.5 text-slate-400 hover:text-white">Cancel</button>
-                        <button type="submit" className="px-4 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700">{editingInvoiceId ? 'Update Invoice' : 'Add Invoice'}</button>
+                        }} className="px-3 py-1.5 text-[#5A5550] hover:text-[#1C1A17]">Cancel</button>
+                        <button type="submit" className="px-4 py-1.5 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded">{editingInvoiceId ? 'Update Invoice' : 'Add Invoice'}</button>
                     </div>
                 </form>
              </div>
@@ -4389,18 +3892,18 @@ const AdminDashboard = () => {
       {/* Add Payment Modal */}
       {isAddPaymentModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
-             <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-md border border-slate-700 max-h-[90vh] flex flex-col">
-                <div className="p-4 border-b border-slate-700"><h3 className="text-lg font-bold text-white">{editingPaymentId ? 'Edit Payment' : 'Record Payment'}</h3></div>
+             <div className="bg-white rounded-xl shadow-2xl w-full max-w-md border border-[#D4C9B8] max-h-[90vh] flex flex-col">
+                <div className="p-4 border-b border-[#D4C9B8] bg-[#FAF7F2]"><h3 className="text-lg font-bold text-[#1C1A17]">{editingPaymentId ? 'Edit Payment' : 'Record Payment'}</h3></div>
                 <form onSubmit={handleAddPayment} className="p-4 space-y-4 flex-1 overflow-y-auto">
                     {!selectedClient && (
                          <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-1">Select Client</label>
+                            <label className="block text-sm font-medium text-[#5A5550] mb-1">Select Client</label>
                             <select
                                 required
                                 disabled={Boolean(editingPaymentId)}
                                 value={paymentFormData.clientId}
                                 onChange={e => setPaymentFormData({...paymentFormData, clientId: e.target.value})}
-                                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white disabled:opacity-50"
+                                className="w-full px-3 py-2 bg-white border border-[#D4C9B8] rounded text-[#1C1A17] disabled:opacity-50 focus:outline-none focus:border-[#9B7D43]"
                             >
                                 <option value="">Select a client...</option>
                                 {clients.map(c => (
@@ -4411,20 +3914,20 @@ const AdminDashboard = () => {
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Payment Date</label>
-                        <input type="date" required value={paymentFormData.date} onChange={e => setPaymentFormData({...paymentFormData, date: e.target.value})} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white" />
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Payment Date</label>
+                        <input type="date" required value={paymentFormData.date} onChange={e => setPaymentFormData({...paymentFormData, date: e.target.value})} className="w-full px-3 py-2 bg-white border border-[#D4C9B8] rounded text-[#1C1A17] focus:outline-none focus:border-[#9B7D43]" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Total Amount Received (₹)</label>
-                        <input type="number" min="0" required value={paymentFormData.amount} onChange={e => setPaymentFormData({...paymentFormData, amount: Number(e.target.value)})} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white" />
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Total Amount Received (₹)</label>
+                        <input type="number" min="0" required value={paymentFormData.amount} onChange={e => setPaymentFormData({...paymentFormData, amount: Number(e.target.value)})} className="w-full px-3 py-2 bg-white border border-[#D4C9B8] rounded text-[#1C1A17] focus:outline-none focus:border-[#9B7D43]" />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">Remarks</label>
-                        <input type="text" value={paymentFormData.remarks} onChange={e => setPaymentFormData({...paymentFormData, remarks: e.target.value})} className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white" placeholder="e.g. UPI, Bank Transfer" />
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Remarks</label>
+                        <input type="text" value={paymentFormData.remarks} onChange={e => setPaymentFormData({...paymentFormData, remarks: e.target.value})} className="w-full px-3 py-2 bg-white border border-[#D4C9B8] rounded text-[#1C1A17] focus:outline-none focus:border-[#9B7D43]" placeholder="e.g. UPI, Bank Transfer" />
                     </div>
 
-                    <div className="border-t border-slate-700 pt-4 mt-2">
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Allocate to Pending Invoices:</label>
+                    <div className="border-t border-[#D4C9B8] pt-4 mt-2">
+                        <label className="block text-sm font-medium text-[#5A5550] mb-2">Allocate to Pending Invoices:</label>
                         {(() => {
                            // Logic to find target client for invoices
                            const targetClient = selectedClient || clients.find(c => c._id === paymentFormData.clientId);
@@ -4440,27 +3943,26 @@ const AdminDashboard = () => {
                                          // But getting old allocation here is hard without complex lookup.
                                          // Let's settle for simple Due display.
                                          return (
-                                        <div key={inv._id} className="flex gap-2 items-center text-sm bg-slate-900/50 p-2 rounded">
+                                        <div key={inv._id} className="flex gap-2 items-center text-sm bg-[#FAF7F2] p-2 rounded border border-[#D4C9B8]">
                                             <div className="flex-1">
-                                                <div className="text-white font-medium">{inv.number}</div>
-                                                <div className="text-xs text-slate-400">Due: ₹{(inv.amount - (inv.paidAmount || 0)).toLocaleString()}</div>
+                                                <div className="text-[#1C1A17] font-medium">{inv.number}</div>
+                                                <div className="text-xs text-[#5A5550]">Due: ₹{(inv.amount - (inv.paidAmount || 0)).toLocaleString()}</div>
                                             </div>
                                             <div className="w-24">
-                                                <input 
-                                                    type="number" 
-                                                    min="0" 
-                                                    max={inv.amount - (inv.paidAmount || 0) + (editingPaymentId ? Number(paymentFormData.allocations[inv._id] || 0) : 0)} 
-                                                    // Allow entering up to Due + Current Allocation (if editing)
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    max={inv.amount - (inv.paidAmount || 0) + (editingPaymentId ? Number(paymentFormData.allocations[inv._id] || 0) : 0)}
                                                     placeholder="Amount"
                                                     value={paymentFormData.allocations[inv._id] || ''}
                                                     onChange={e => setPaymentFormData({
-                                                        ...paymentFormData, 
+                                                        ...paymentFormData,
                                                         allocations: {
                                                             ...paymentFormData.allocations,
                                                             [inv._id]: e.target.value
                                                         }
                                                     })}
-                                                    className="w-full px-2 py-1 bg-slate-700 border border-slate-600 rounded text-right text-white"
+                                                    className="w-full px-2 py-1 bg-white border border-[#D4C9B8] rounded text-right text-[#1C1A17] focus:outline-none focus:border-[#9B7D43]"
                                                 />
                                             </div>
                                         </div>
@@ -4468,13 +3970,13 @@ const AdminDashboard = () => {
                                 </div>
                               );
                            } else {
-                               return <p className="text-xs text-slate-500 italic">No pending invoices found for selected client.</p>;
+                               return <p className="text-xs text-[#9A8A7A] italic">No pending invoices found for selected client.</p>;
                            }
                         })()}
-                        
-                        <div className="mt-2 text-right text-xs text-slate-400">
+
+                        <div className="mt-2 text-right text-xs text-[#5A5550]">
                              Unallocated: <span className={
-                                 (paymentFormData.amount - Object.values(paymentFormData.allocations).reduce((a, b) => a + Number(b), 0)) < 0 ? 'text-red-400' : 'text-slate-300'
+                                 (paymentFormData.amount - Object.values(paymentFormData.allocations).reduce((a, b) => a + Number(b), 0)) < 0 ? 'text-red-600' : 'text-[#1C1A17]'
                              }>
                                  ₹{(paymentFormData.amount - Object.values(paymentFormData.allocations).reduce((a, b) => a + Number(b), 0)).toLocaleString()}
                              </span>
@@ -4482,11 +3984,11 @@ const AdminDashboard = () => {
                     </div>
 
                 </form>
-                <div className="p-4 border-t border-slate-700 flex justify-end gap-2 bg-slate-800">
+                <div className="p-4 border-t border-[#D4C9B8] flex justify-end gap-2 bg-[#FAF7F2]">
                     <button type="button" onClick={() => {
                         setIsAddPaymentModalOpen(false);
                         setEditingPaymentId(null);
-                    }} className="px-3 py-1.5 text-slate-400 hover:text-white">Cancel</button>
+                    }} className="px-3 py-1.5 text-[#5A5550] hover:text-[#1C1A17]">Cancel</button>
                     <button type="button" onClick={handleAddPayment} className="px-4 py-1.5 bg-green-600 text-white rounded hover:bg-green-700">{editingPaymentId ? 'Update Payment' : 'Save Payment'}</button>
                 </div>
              </div>
@@ -4497,38 +3999,38 @@ const AdminDashboard = () => {
       {/* Edit User Modal (Admin) */}
       {showUserEditModal && selectedUserForEdit && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-slate-800 rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-700">
-                <h3 className="text-xl font-bold text-white mb-4">Edit User Profile</h3>
+            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-[#D4C9B8]">
+                <h3 className="text-xl font-bold text-[#1C1A17] mb-4">Edit User Profile</h3>
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-slate-400 mb-1">Full Name</label>
-                        <input 
-                            type="text" 
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white"
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Full Name</label>
+                        <input
+                            type="text"
+                            className="w-full bg-white border border-[#D4C9B8] rounded-lg p-2 text-[#1C1A17] focus:outline-none focus:border-[#9B7D43]"
                             value={userEditForm.name}
                             onChange={(e) => setUserEditForm({...userEditForm, name: e.target.value})}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-400 mb-1">Registration Number</label>
-                        <input 
-                            type="text" 
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white"
+                        <label className="block text-sm font-medium text-[#5A5550] mb-1">Registration Number</label>
+                        <input
+                            type="text"
+                            className="w-full bg-white border border-[#D4C9B8] rounded-lg p-2 text-[#1C1A17] focus:outline-none focus:border-[#9B7D43]"
                             value={userEditForm.registrationNumber}
                             onChange={(e) => setUserEditForm({...userEditForm, registrationNumber: e.target.value})}
                         />
                     </div>
                 </div>
                 <div className="flex justify-end gap-3 mt-6">
-                    <button 
+                    <button
                         onClick={() => setShowUserEditModal(false)}
-                        className="px-4 py-2 text-slate-400 hover:text-white"
+                        className="px-4 py-2 text-[#5A5550] hover:text-[#1C1A17]"
                     >
                         Cancel
                     </button>
-                    <button 
+                    <button
                         onClick={handleUserEditSubmit}
-                        className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium"
+                        className="px-4 py-2 bg-[#9B7D43] hover:bg-[#7A6235] text-white rounded-lg font-medium"
                     >
                         Save Changes
                     </button>

@@ -108,13 +108,13 @@ const TopicQuizModal = ({
     }
     if (isCorrectAnswer) return { backgroundColor: '#EFF8EF', borderColor: '#22c55e', color: '#166534' };
     if (isUserSelected && !isCorrectAnswer) return { backgroundColor: '#FEF2F2', borderColor: '#ef4444', color: '#991b1b', opacity: 0.8 };
-    return { backgroundColor: '#F5F0E8', borderColor: '#E0D8CC', color: '#9A8A7A', opacity: 0.6 };
+    return { backgroundColor: '#F5F0E8', borderColor: '#E0D8CC', color: '#5A5550', opacity: 0.7 };
   };
 
   const getLetterCircleStyle = (index) => {
     const isUserSelected = index === selectedOption;
     const isCorrectAnswer = index === currentQuiz.correctAnswer;
-    if (!showExplanation) return { borderColor: '#D4B896', color: '#9A8A7A', backgroundColor: 'transparent' };
+    if (!showExplanation) return { borderColor: '#D4B896', color: '#5A5550', backgroundColor: 'transparent' };
     if (isCorrectAnswer) return { backgroundColor: '#22c55e', borderColor: '#16a34a', color: '#fff' };
     if (isUserSelected && !isCorrectAnswer) return { backgroundColor: '#ef4444', borderColor: '#dc2626', color: '#fff' };
     return { borderColor: '#D4B896', color: '#C9A96E', backgroundColor: 'transparent' };
@@ -128,7 +128,7 @@ const TopicQuizModal = ({
           <div>
             <div className="flex items-center gap-3">
               {topicTitle && (
-                <h3 className="text-lg font-bold hidden md:block" style={{ color: '#1C1A17', fontFamily: "'Playfair Display', Georgia, serif" }}>
+                <h3 className="text-xl font-bold hidden md:block" style={{ color: '#1C1A17', fontFamily: "'Playfair Display', Georgia, serif" }}>
                   {topicTitle}
                 </h3>
               )}
@@ -163,7 +163,7 @@ const TopicQuizModal = ({
         {/* Body */}
         <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
           <div className="mb-5">
-            <h4 className="text-sm md:text-base font-medium leading-relaxed" style={{ color: '#1C1A17' }}>
+            <h4 className="text-base md:text-lg font-semibold leading-relaxed" style={{ color: '#1C1A17' }}>
               {currentQuiz.question}
             </h4>
             {currentQuiz.questionCode && (
@@ -182,17 +182,17 @@ const TopicQuizModal = ({
                   key={index}
                   onClick={() => handleOptionClick(index)}
                   disabled={showExplanation || isSubmitting}
-                  className="w-full py-2 px-3 rounded-lg border text-left transition-all duration-200 flex items-center justify-between"
+                  className="w-full py-3 px-4 rounded-lg border text-left transition-all duration-200 flex items-center justify-between"
                   style={getOptionStyle(index)}
                 >
                   <div className="flex items-center gap-3">
                     <span
-                      className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold border transition-colors flex-shrink-0"
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-colors flex-shrink-0"
                       style={getLetterCircleStyle(index)}
                     >
                       {String.fromCharCode(65 + index)}
                     </span>
-                    <span className="text-sm">{option}</span>
+                    <span className="text-sm md:text-base font-medium">{option}</span>
                   </div>
                   {showExplanation && isCorrectAnswer && (
                     <svg className="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,15 +231,15 @@ const TopicQuizModal = ({
                   )}
                 </div>
                 <div className="flex-1">
-                  <h5 className="font-bold mb-1 text-sm" style={{ color: isCorrect ? '#16a34a' : '#dc2626' }}>
+                  <h5 className="font-bold mb-1 text-base" style={{ color: isCorrect ? '#16a34a' : '#dc2626' }}>
                     {isCorrect ? "Nicely done!" : "Incorrect"}
                   </h5>
                   {!isCorrect && (
-                    <p className="text-xs mb-2" style={{ color: '#5A5550' }}>
+                    <p className="text-sm mb-2 font-medium" style={{ color: '#5A5550' }}>
                       The correct answer is highlighted in green.
                     </p>
                   )}
-                  <p className="text-xs md:text-sm leading-relaxed" style={{ color: '#1C1A17' }}>
+                  <p className="text-sm md:text-base leading-relaxed" style={{ color: '#1C1A17' }}>
                     {currentQuiz.explanation || "No explanation provided."}
                   </p>
 

@@ -486,7 +486,7 @@ const LearningTracker = () => {
                     </div>
                     {}
                     <div className="flex items-center gap-2 rounded-full px-3 py-1.5" style={{ backgroundColor: '#F0E8DC', border: '1px solid #D4B896' }}>
-                      <span className="text-[10px] font-medium uppercase tracking-wider hidden sm:inline" style={{ color: '#9A8A7A' }}>DAILY TARGET</span>
+                      <span className="text-xs font-semibold uppercase tracking-wider hidden sm:inline" style={{ color: '#5A5550' }}>DAILY TARGET</span>
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => setDailyTarget(Math.max(1, dailyTarget - 1))}
@@ -500,7 +500,7 @@ const LearningTracker = () => {
                           disabled={dailyTarget >= 20}
                         >+</button>
                       </div>
-                      <span className="text-[10px] font-medium uppercase tracking-wider hidden sm:inline" style={{ color: '#9A8A7A' }}>TOPICS</span>
+                      <span className="text-xs font-semibold uppercase tracking-wider hidden sm:inline" style={{ color: '#5A5550' }}>TOPICS</span>
                     </div>
                   </div>
                   {}
@@ -545,9 +545,9 @@ const LearningTracker = () => {
                           return (
                             <div key={idx} className="relative group">
                               {}
-                              <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl" style={{ backgroundColor: '#1C1A17', color: '#FAF7F2', border: '1px solid #3A3530' }}>
+                              <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl" style={{ backgroundColor: '#1C1A17', color: '#FAF7F2', border: '1px solid #3A3530' }}>
                                 <span className="font-bold" style={{ color: isUnlocked ? '#C9A96E' : '#9A8A7A' }}>{badge.fullName}</span>
-                                <span className="ml-1" style={{ color: '#9A8A7A' }}>({badge.threshold} pts)</span>
+                                <span className="ml-1" style={{ color: '#D4B896' }}>({badge.threshold} pts)</span>
                               </div>
                               <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 transition-all duration-300 ${
                                 isUnlocked
@@ -612,7 +612,7 @@ const LearningTracker = () => {
                         {}
                         <div className="absolute inset-0 m-1 rounded-full flex items-center justify-center flex-col transition-colors"
                           style={{ backgroundColor: day.isToday ? 'rgba(155,125,67,0.15)' : 'transparent' }}>
-                          <span className="text-[10px] font-bold" style={{ color: day.isToday ? '#9B7D43' : '#5A5550' }}>
+                          <span className="text-xs font-bold" style={{ color: day.isToday ? '#9B7D43' : '#5A5550' }}>
                             {day.date}
                           </span>
                         </div>
@@ -624,7 +624,7 @@ const LearningTracker = () => {
                           </div>
                         )}
                       </div>
-                      <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: day.isToday ? '#9B7D43' : '#9A8A7A' }}>
+                      <span className="text-xs font-bold uppercase tracking-wider" style={{ color: day.isToday ? '#9B7D43' : '#5A5550' }}>
                         {day.dayName}
                       </span>
                     </div>
@@ -645,7 +645,7 @@ const LearningTracker = () => {
                 <h3 className="text-xs font-bold" style={{ color: '#1C1A17' }}>
                   {calendarDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
                 </h3>
-                <div className="flex gap-1.5 text-[9px]" style={{ color: '#9A8A7A' }}>
+                <div className="flex gap-1.5 text-xs font-medium" style={{ color: '#5A5550' }}>
                   <div className="flex items-center gap-1">
                     <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#E8DDD0' }}></div>
                     <span>0</span>
@@ -662,7 +662,7 @@ const LearningTracker = () => {
               </div>
               <div className="grid grid-cols-7 gap-1 text-center mb-1">
                 {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-                  <div key={i} className="text-[9px] font-bold" style={{ color: '#9A8A7A' }}>{d}</div>
+                  <div key={i} className="text-xs font-bold" style={{ color: '#5A5550' }}>{d}</div>
                 ))}
               </div>
               <div className="grid grid-cols-7 gap-1 flex-1 content-start">
@@ -680,7 +680,7 @@ const LearningTracker = () => {
                     const currentDate = new Date(year, month, i);
                     const dateStr = getLocalDateString(currentDate);
                     const count = dailyProgressMap[dateStr] || 0;
-                    let bgClass = 'text-[#9A8A7A]';
+                    let bgClass = 'text-[#5A5550]';
                     let bgStyle = { backgroundColor: '#E8DDD0' };
                     if (count >= dailyTarget) {
                       bgClass = 'text-white shadow-md';
@@ -693,7 +693,7 @@ const LearningTracker = () => {
                     days.push(
                       <div 
                         key={i} 
-                        className={`aspect-square rounded-md flex items-center justify-center text-[10px] font-medium transition-all hover:scale-110 cursor-default ${bgClass} ${isToday ? 'ring-2 ring-[#9B7D43] ring-offset-1 ring-offset-[#F0E8DC] z-10' : ''}`}
+                        className={`aspect-square rounded-md flex items-center justify-center text-xs font-semibold transition-all hover:scale-110 cursor-default ${bgClass} ${isToday ? 'ring-2 ring-[#9B7D43] ring-offset-1 ring-offset-[#F0E8DC] z-10' : ''}`}
                         style={bgStyle}
                         title={`${count} topics completed`}
                       >
@@ -816,7 +816,7 @@ const LearningTracker = () => {
                               <span style={{ color: '#9B7D43' }}>Module {index + 1} :</span> {module.title.replace(/^Module\s+\d+\s*[:\s-]+\s*/i, '')}
                             </h3>
                             {module.category && (
-                              <p className="text-xs text-center mt-1 relative z-10 uppercase tracking-wider font-semibold" style={{ color: '#9A8A7A' }}>
+                              <p className="text-xs text-center mt-1 relative z-10 uppercase tracking-wider font-semibold" style={{ color: '#5A5550' }}>
                                 {module.category}
                               </p>
                             )}
@@ -834,7 +834,7 @@ const LearningTracker = () => {
                                     style={{ background: 'linear-gradient(90deg, #9B7D43, #C9A96E)', width: `${progressPercentage}%` }}
                                   >
                                     {progressPercentage > 15 && (
-                                      <span className="text-[10px] font-bold text-white">{Math.round(progressPercentage)}%</span>
+                                      <span className="text-xs font-bold text-white">{Math.round(progressPercentage)}%</span>
                                     )}
                                   </div>
                                 </div>
@@ -942,7 +942,7 @@ const LearningTracker = () => {
                                                   ? { backgroundColor: '#22c55e', color: '#fff' }
                                                   : topic.completed
                                                     ? { backgroundColor: '#9B7D43', color: '#FAF7F2' }
-                                                    : { backgroundColor: '#E0D8CC', color: '#9A8A7A', opacity: 0.7, cursor: 'not-allowed' }
+                                                    : { backgroundColor: '#E0D8CC', color: '#5A5550', opacity: 0.7, cursor: 'not-allowed' }
                                                 }
                                                 title={isQuizCompleted ? "All questions attempted" : (topic.completed ? "Take a quiz on this topic" : "Complete the topic to unlock quiz")}
                                               >
@@ -1008,7 +1008,7 @@ const LearningTracker = () => {
                                                     rel="noopener noreferrer"
                                                     className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold transition-all"
                                                     style={topic.completed
-                                                      ? { backgroundColor: '#E0D8CC', color: '#9A8A7A' }
+                                                      ? { backgroundColor: '#E0D8CC', color: '#5A5550' }
                                                       : { backgroundColor: 'rgba(201,169,110,0.15)', color: '#9B7D43', border: '1px solid rgba(201,169,110,0.5)' }
                                                     }
                                                     title="Open problem in new tab"
@@ -1029,7 +1029,7 @@ const LearningTracker = () => {
                                 );
                               })()
                           ) : (
-                            <div className="text-center py-8" style={{ color: '#9A8A7A' }}>
+                            <div className="text-center py-8" style={{ color: '#5A5550' }}>
                               <p>No topics available for this module</p>
                             </div>
                           )}
@@ -1059,23 +1059,23 @@ const LearningTracker = () => {
                         {overallProgress.completedModules} / {overallProgress.totalModules} Modules
                       </span>
                     </PieChart>
-                    <p className="text-xs mt-4 text-center max-w-[200px]" style={{ color: '#9A8A7A' }}>
+                    <p className="text-xs mt-4 text-center max-w-[200px]" style={{ color: '#5A5550' }}>
                       Complete all topics in a module to mark it as finished
                     </p>
                     {}
                     <div className="mt-4 pt-4 w-full" style={{ borderTop: '1px solid #E0D8CC' }}>
                       <div className="text-center">
-                        <p className="text-sm mb-1" style={{ color: '#9A8A7A' }}>Total Topics Completed</p>
+                        <p className="text-sm mb-1 font-medium" style={{ color: '#5A5550' }}>Total Topics Completed</p>
                         <p className="text-2xl font-bold" style={{ color: '#9B7D43' }}>
                           {modules.reduce((total, module) => {
                             return total + (module.topics?.filter(t => t.completed).length || 0);
                           }, 0)}
-                          <span className="text-lg" style={{ color: '#9A8A7A' }}> / </span>
+                          <span className="text-lg" style={{ color: '#5A5550' }}> / </span>
                           {modules.reduce((total, module) => {
                             return total + (module.topics?.length || 0);
                           }, 0)}
                         </p>
-                        <p className="text-xs mt-1" style={{ color: '#9A8A7A' }}>topics in all modules</p>
+                        <p className="text-xs mt-1 font-medium" style={{ color: '#5A5550' }}>topics in all modules</p>
                       </div>
                     </div>
                   </div>
@@ -1094,7 +1094,7 @@ const LearningTracker = () => {
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}
-                  className="flex-shrink-0 transition-all duration-300 rounded-full flex items-center justify-center font-bold text-[10px] w-7 h-7"
+                  className="flex-shrink-0 transition-all duration-300 rounded-full flex items-center justify-center font-bold text-xs w-7 h-7"
                   style={index === currentIndex
                     ? { backgroundColor: '#9B7D43', color: '#FAF7F2', boxShadow: '0 2px 8px rgba(155,125,67,0.4)', border: '1px solid #C9A96E' }
                     : { backgroundColor: '#FAF7F2', color: '#5A5550', border: '1px solid #D4B896' }
@@ -1353,12 +1353,12 @@ const BadgeModal = ({ badge, isOpen, onClose, userName }) => {
           <p className="mb-6" style={{ color: '#5A5550' }}>{details.message}</p>
 
           <div className="rounded-xl p-4 w-full mb-4" style={{ backgroundColor: '#F0E8DC', border: '1px solid #D4B896' }}>
-            <p className="text-xs uppercase tracking-wider font-bold mb-1" style={{ color: '#9A8A7A' }}>Next Goal</p>
+            <p className="text-xs uppercase tracking-wider font-bold mb-1" style={{ color: '#5A5550' }}>Next Goal</p>
             <p className="font-medium" style={{ color: '#9B7D43' }}>{details.nextGoal}</p>
           </div>
 
           <div className="text-center mb-6">
-             <p className="text-sm italic" style={{ color: '#9A8A7A' }}>
+             <p className="text-sm italic" style={{ color: '#5A5550' }}>
                Take a screenshot and share on LinkedIn for share your achivement with your connections
              </p>
           </div>

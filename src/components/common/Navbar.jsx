@@ -231,13 +231,13 @@ const Navbar = () => {
                         #{userRank}
                       </span>
                       {pointsToNextRank > 0 && userRank > 1 && (
-                        <span className="hidden xl:flex items-center gap-1 text-[10px] font-bold opacity-80 ml-2" style={{ color: '#9B7D43' }} title={`${pointsToNextRank} points needed to reach rank #${userRank - 1}`}>
+                        <span className="hidden xl:flex items-center gap-1 text-xs font-bold opacity-90 ml-2" style={{ color: '#9B7D43' }} title={`${pointsToNextRank} points needed to reach rank #${userRank - 1}`}>
                           <span>{pointsToNextRank}</span>
                           <AnimatedCoin
-                            className="w-2 h-2"
-                            textSize="text-[4px]"
+                            className="w-3 h-3"
+                            textSize="text-[6px]"
                           />
-                          <FaArrowRight className="text-[8px] mx-0.5" style={{ color: '#9B7D43' }} />
+                          <FaArrowRight className="text-xs mx-0.5" style={{ color: '#9B7D43' }} />
                           <span>#{userRank - 1}</span>
                         </span>
                       )}
@@ -413,10 +413,10 @@ const Navbar = () => {
                           <span>#{userRank}</span>
                         </div>
                         {pointsToNextRank > 0 && userRank > 1 && (
-                          <div className="flex items-center gap-1 text-[10px] font-medium opacity-80" style={{ color: '#9B7D43' }}>
+                          <div className="flex items-center gap-1 text-xs font-semibold opacity-90" style={{ color: '#9B7D43' }}>
                             <span>{pointsToNextRank}</span>
-                            <AnimatedCoin className="w-2 h-2" textSize="text-[4px]" />
-                            <FaArrowRight className="text-[8px] mx-0.5" />
+                            <AnimatedCoin className="w-3 h-3" textSize="text-[6px]" />
+                            <FaArrowRight className="text-xs mx-0.5" />
                             <span>#{userRank - 1}</span>
                           </div>
                         )}

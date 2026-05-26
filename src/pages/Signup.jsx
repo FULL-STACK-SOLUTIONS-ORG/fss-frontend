@@ -8,14 +8,16 @@ const Signup = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [errorIsExisting, setErrorIsExisting] = useState(false);
   const [success, setSuccess] = useState('');
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError('');
+    setErrorIsExisting(false);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); setSuccess('');
+    setError(''); setErrorIsExisting(false); setSuccess('');
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) { setError('Please fill in all fields'); return; }
     if (formData.password.length < 6) { setError('Password must be at least 6 characters'); return; }
     if (formData.password !== formData.confirmPassword) { setError('Passwords do not match'); return; }
@@ -26,7 +28,19 @@ const Signup = () => {
         setSuccess(result.message);
         setTimeout(() => { navigate('/verify-otp', { state: { userId: result.userId, email: formData.email } }); }, 1500);
       }
-    } catch (err) { setError(err.message || 'An error occurred during signup'); }
+    } catch (err) {
+      const msg = err.message || '';
+      if (msg.includes('User already exists') || msg.includes('already exists')) {
+        setError('An account with this email already exists.');
+        setErrorIsExisting(true);
+      } else if (msg.includes('provide all required')) {
+        setError('Please fill in all fields before submitting.');
+      } else if (msg.includes('Network') || msg.includes('fetch')) {
+        setError('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        setError(msg || 'Something went wrong. Please try again.');
+      }
+    }
     finally { setLoading(false); }
   };
   const inputStyle = { backgroundColor: '#FAF7F2', color: '#1C1A17', borderColor: '#D4B896' };
@@ -50,7 +64,12 @@ const Signup = () => {
           {error && (
             <div className="mb-4 p-4 rounded-lg flex items-start gap-3" style={{ backgroundColor: '#fee2e2', border: '1px solid #fca5a5' }}>
               <FaExclamationCircle className="text-red-500 mt-0.5 flex-shrink-0" />
-              <p className="text-red-600 text-sm">{error}</p>
+              <p className="text-red-600 text-sm">
+                {error}{' '}
+                {errorIsExisting && (
+                  <Link to="/login" className="font-semibold underline" style={{ color: '#b91c1c' }}>Log in instead</Link>
+                )}
+              </p>
             </div>
           )}
           {success && (
