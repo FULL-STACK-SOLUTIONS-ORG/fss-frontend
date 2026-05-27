@@ -15,6 +15,7 @@ const VerifyOTP = React.lazy(() => import("./pages/VerifyOTP"));
 const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
 const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
 const StudentDashboard = React.lazy(() => import("./pages/StudentDashboard"));
+const Development = React.lazy(() => import("./pages/Development"));
 const App = () => {
   return (
     <BrowserRouter>
@@ -59,6 +60,13 @@ const App = () => {
           <>
             <Navbar />
             <LearningTracker />
+          </>
+        } />
+        <Route path="/development" element={
+          <>
+            <Navbar />
+            <Development />
+            <Footer />
           </>
         } />
         <Route path="/dashboard" element={

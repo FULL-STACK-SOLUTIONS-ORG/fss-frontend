@@ -70,7 +70,8 @@ const Navbar = () => {
     { name: 'Home', href: '/' },
     { name: 'Mentorship Program', href: '/mentorship' },
     { name: 'Roadmap', href: '/roadmap' },
-    { name: 'Tick2Test', href: '/tick2test' }
+    { name: 'Tick2Test', href: '/tick2test' },
+    { name: 'Development', href: '/development' }
   ];
   const handleHomeClick = (e) => {
     e.preventDefault();
