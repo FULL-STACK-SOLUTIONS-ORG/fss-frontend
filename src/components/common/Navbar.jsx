@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaUser, FaSignOutAlt, FaChartLine, FaChevronDown, FaPhone, FaArrowRight, FaStar, FaTasks } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaChevronDown, FaPhone, FaArrowRight, FaStar, FaTasks } from 'react-icons/fa';
 import AnimatedCoin from './AnimatedCoin';
 import EnquiryForm from './EnquiryForm';
 import logo from '../../assets/logo.png';
@@ -70,7 +70,6 @@ const Navbar = () => {
     { name: 'Home', href: '/' },
     { name: 'Mentorship Program', href: '/mentorship' },
     { name: 'Roadmap', href: '/roadmap' },
-    { name: 'Tick2Test', href: '/tick2test' },
     { name: 'Development', href: '/development' }
   ];
   const handleHomeClick = (e) => {
@@ -165,7 +164,6 @@ const Navbar = () => {
                     </a>
                   );
                 }
-                const isTick2Test = link.name === 'Tick2Test';
                 return (
                   <Link
                     key={link.name}
@@ -176,9 +174,7 @@ const Navbar = () => {
                     onMouseEnter={e => { e.currentTarget.style.color = '#9B7D43'; e.currentTarget.style.backgroundColor = '#F0E8DC'; }}
                     onMouseLeave={e => { e.currentTarget.style.color = '#1C1A17'; e.currentTarget.style.backgroundColor = 'transparent'; }}
                   >
-                    <span className={`relative z-10 ${isTick2Test ? 'font-bold' : ''}`} style={isTick2Test ? { background: 'linear-gradient(90deg, #9B7D43, #C9A96E, #9B7D43)', backgroundClip: 'text', WebkitBackgroundClip: 'text', color: 'transparent', backgroundSize: '200% auto', animation: 'shine 2s linear infinite' } : {}}>
-                      {link.name}
-                    </span>
+                    <span className="relative z-10">{link.name}</span>
                     <span className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 rounded-full group-hover:w-3/4 transition-all duration-300" style={{ backgroundColor: '#9B7D43' }}></span>
                   </Link>
                 );
@@ -369,7 +365,6 @@ const Navbar = () => {
                   </a>
                 );
               }
-              const isTick2Test = link.name === 'Tick2Test';
               return (
                 <Link
                   key={link.name}
@@ -379,9 +374,7 @@ const Navbar = () => {
                   onMouseEnter={e => { e.currentTarget.style.color = '#9B7D43'; e.currentTarget.style.backgroundColor = '#F0E8DC'; }}
                   onMouseLeave={e => { e.currentTarget.style.color = '#1C1A17'; e.currentTarget.style.backgroundColor = 'transparent'; }}
                 >
-                  <span className={isTick2Test ? 'font-bold' : ''} style={isTick2Test ? { background: 'linear-gradient(90deg, #9B7D43, #C9A96E, #9B7D43)', backgroundClip: 'text', WebkitBackgroundClip: 'text', color: 'transparent', backgroundSize: '200% auto', animation: 'shine 2s linear infinite' } : {}}>
-                    {link.name}
-                  </span>
+                  <span>{link.name}</span>
                 </Link>
               );
             })}
@@ -424,15 +417,6 @@ const Navbar = () => {
                       </div>
                     )}
                   </div>
-                  <Link
-                    to="/tick2test"
-                    onClick={() => setIsOpen(false)}
-                    className="w-full px-4 py-3 rounded-xl text-base font-semibold hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:scale-105"
-                    style={{ background: 'linear-gradient(135deg, #9B7D43, #C9A96E)', color: '#FAF7F2' }}
-                  >
-                    <FaChartLine />
-                    <span>Tick2Test</span>
-                  </Link>
                   <button
                     onClick={() => { handleLogout(); setIsOpen(false); }}
                     className="w-full bg-red-600 text-white px-4 py-3 rounded-xl text-base font-semibold hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:scale-105"
